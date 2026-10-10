@@ -3,20 +3,60 @@ import { crearParedPagina } from '~/utils/paredPagina'
 import { useLimpieza } from '~/composables/useLimpieza'
 
 // La pared de toda la página (ver utils/paredPagina.js). Empieza donde acaba el hero
-// (#hero) y queda limpia al llegar al botón final (#final).
+// (#hero) y queda limpia al llegar al botón final (#final). En la sección [data-oscuro]
+// la pared está a oscuras y se ve con una linterna: el ratón, el dedo o, si nadie la mueve,
+// una luz que se pasea sola.
 const lienzo = ref(null)
 const { progresoPagina } = useLimpieza()
 
 let pared = null
 let pendiente = false
 let bloques = []
+let seccionOscura = null
 let reducido = false
+
+// La linterna: donde está y adonde va (px CSS de pantalla)
+const luz = { x: 0, y: 0, destinoX: 0, destinoY: 0, ultimoGesto: -1e9, colocada: false }
+let bucle = 0
+
+const suave = (a, b, x) => {
+  const t = Math.min(1, Math.max(0, (x - a) / (b - a)))
+  return t * t * (3 - 2 * t)
+}
 
 function buscarBloques() {
   bloques = [...document.querySelectorAll('[data-limpio]')]
+  seccionOscura = document.querySelector('[data-oscuro]')
 }
 
-function pintar() {
+function rectOscuro(vista) {
+  if (!seccionOscura) return null
+  const r = seccionOscura.getBoundingClientRect()
+  if (r.bottom < 0 || r.top > vista) return null
+  return { x0: r.left, y0: r.top, x1: r.right, y1: r.bottom }
+}
+
+// Si nadie la mueve en 2,5 s, la luz recorre la pared despacio
+function moverLuz(oscuro, t) {
+  const w = oscuro.x1 - oscuro.x0
+  const visibleArriba = Math.max(oscuro.y0, 0)
+  const visibleAbajo = Math.min(oscuro.y1, window.innerHeight)
+  const h = Math.max(1, visibleAbajo - visibleArriba)
+  if (t - luz.ultimoGesto > 2500) {
+    luz.destinoX = oscuro.x0 + w * (0.62 + 0.3 * Math.sin(t * 0.00045))
+    luz.destinoY = visibleArriba + h * (0.5 + 0.32 * Math.sin(t * 0.0007 + 1.3))
+  }
+  if (!luz.colocada) {
+    luz.x = luz.destinoX
+    luz.y = luz.destinoY
+    luz.colocada = true
+  }
+  luz.x += (luz.destinoX - luz.x) * 0.12
+  luz.y += (luz.destinoY - luz.y) * 0.12
+  return { x: luz.x, y: luz.y, radio: Math.min(340, Math.max(150, Math.min(w, h) * 0.34)) }
+}
+
+function pintar(t = performance.now()) {
   pendiente = false
   if (!pared) return
   const hero = document.getElementById('hero')
@@ -37,13 +77,36 @@ function pintar() {
     if (r.bottom < -60 || r.top > vista + 60 || r.width === 0) continue
     rects.push({ x0: r.left, y0: r.top, x1: r.right, y1: r.bottom })
   }
-  pared.dibujar({ scroll, inicio, p, rects })
+  const oscuro = rectOscuro(vista)
+  const linterna = oscuro ? moverLuz(oscuro, t) : null
+  // Las luces se apagan cuando la noche ocupa la pantalla (y se encienden al salir)
+  const tapa = oscuro ? (Math.min(oscuro.y1, vista) - Math.max(oscuro.y0, 0)) / vista : 0
+  const noche = suave(0.4, 0.85, tapa)
+  pared.dibujar({ scroll, inicio, p, rects, oscuro, luz: linterna, noche })
+
+  // Con la noche a la vista, la linterna se mueve sola: se repinta cada fotograma
+  if (oscuro && noche > 0 && !reducido) {
+    bucle = requestAnimationFrame(pintar)
+  } else {
+    bucle = 0
+  }
 }
 
 function pedirPintar() {
-  if (pendiente) return
+  if (pendiente || bucle) return
   pendiente = true
   requestAnimationFrame(pintar)
+}
+
+function alApuntar(e) {
+  const punto = e.touches?.[0] ?? e
+  if (!seccionOscura) return
+  const r = seccionOscura.getBoundingClientRect()
+  if (punto.clientY < r.top || punto.clientY > r.bottom) return
+  luz.destinoX = punto.clientX
+  luz.destinoY = punto.clientY
+  luz.ultimoGesto = performance.now()
+  pedirPintar()
 }
 
 function alCambiarTamano() {
@@ -55,15 +118,21 @@ function alCambiarTamano() {
 onMounted(() => {
   reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   pared = crearParedPagina(lienzo.value)
+  if (!pared) document.documentElement.classList.add('sin-pared')
   buscarBloques()
   pedirPintar()
   window.addEventListener('scroll', pedirPintar, { passive: true })
   window.addEventListener('resize', alCambiarTamano)
+  window.addEventListener('pointermove', alApuntar, { passive: true })
+  window.addEventListener('touchmove', alApuntar, { passive: true })
 })
 
 onBeforeUnmount(() => {
+  cancelAnimationFrame(bucle)
   window.removeEventListener('scroll', pedirPintar)
   window.removeEventListener('resize', alCambiarTamano)
+  window.removeEventListener('pointermove', alApuntar)
+  window.removeEventListener('touchmove', alApuntar)
   pared?.destruir()
 })
 </script>
@@ -78,7 +147,7 @@ onBeforeUnmount(() => {
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 0;
+  z-index: -1;   /* detrás de todo, en el mismo contexto: así el texto de la noche puede mezclarse con ella */
   pointer-events: none;
   background: #ecebe6;
 }

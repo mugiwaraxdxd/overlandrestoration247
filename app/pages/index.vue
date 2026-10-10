@@ -15,5 +15,5 @@
 </template>
 
 <style scoped>
-main { position: relative; z-index: 1; }
+main { position: relative; }
 </style>

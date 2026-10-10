@@ -31,7 +31,6 @@ const PROBLEMAS = [
 <style scoped>
 .problemas {
   position: relative;
-  z-index: 1;
   padding: 96px var(--margen) 120px;
 }
 .cabeza { display: grid; gap: 14px; margin-bottom: 40px; max-width: 900px; }

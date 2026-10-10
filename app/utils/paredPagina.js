@@ -3,6 +3,7 @@
 // scroll como si fuera la pared. Cada mancha se limpia al subir por la pantalla (lo que tienes
 // delante se va limpiando) y, además, cuanto más se baja menos queda: al llegar al botón final, nada.
 // El moho no se mete detrás del texto: los bloques marcados con [data-limpio] le pasan su sitio.
+// La sección [data-oscuro] es la pared a oscuras: solo se ve donde apunta la linterna.
 import { GLSL_COMUN, GLSL_MOHO } from './glslComun'
 import { VERTICES } from './paredDanada'
 
@@ -19,10 +20,22 @@ uniform float uInicio;   // dónde empieza la pared (el final del hero), en px d
 uniform float uP;        // cuánto se ha avanzado hacia el botón final (0..1)
 uniform vec4 uZonas[${MAX_ZONAS_LIMPIAS}];   // rectángulos sin moho (x0, y0, x1, y1), px CSS de pantalla
 uniform float uNZonas;
+uniform vec4 uOscuro;     // la sección de noche (x0, y0, x1, y1), px CSS de pantalla
+uniform float uHayOscuro;
+uniform float uNoche;     // cuánto se han apagado las luces de toda la pantalla (0..1)
+uniform vec2 uLuz;        // dónde apunta la linterna, px CSS de pantalla
+uniform float uRadio;     // radio de la linterna, px CSS
 
 const float UNIDAD = 820.0;   // la escala del grano: la misma que la pared del hero
 float gAncho;
 float gPMoho;
+
+// 1 dentro de la sección de noche (con el borde suave), 0 fuera
+float aOscuras(vec2 v) {
+  if (uHayOscuro <= 0.0) return 0.0;
+  // a todo el ancho: solo se difumina arriba y abajo
+  return smoothstep(uOscuro.y, uOscuro.y + 90.0, v.y) * (1.0 - smoothstep(uOscuro.w - 90.0, uOscuro.w, v.y));
+}
 
 // Cuánto moho hay en un punto (en unidades de página), ya restada la limpieza
 float densidad(vec2 pos) {
@@ -33,6 +46,8 @@ float densidad(vec2 pos) {
   float tramos = noise(vec2(pos.x * 0.7, pos.y * 1.5) + 3.0) * 0.6 + noise(pos * 4.0 + 9.0) * 0.4;
   D *= 1.9 * smoothstep(0.3, 0.68, tramos);                                    // a trozos, no una franja
   D += 1.0 * smoothstep(0.66, 0.9, noise(pos * 1.4 + 21.0));                     // manchas sueltas en medio
+  float noche = aOscuras(vec2(x, yPagina - uScroll));
+  D += 1.5 * noche * (0.45 + 0.55 * smoothstep(0.3, 0.7, noise(pos * 2.2 + 41.0)));   // a oscuras está todo lo que no se ve de día
   float islas = noise(pos * 3.2 + 3.0) * 0.6 + noise(pos * 8.0 + 9.0) * 0.4;
   D *= 0.3 + 1.3 * smoothstep(0.25, 0.78, islas);
   D *= smoothstep(0.0, 260.0, yPagina - uInicio);                              // nada por encima del hero
@@ -40,7 +55,7 @@ float densidad(vec2 pos) {
   // Se limpia al subir por la pantalla, y cuanto más se ha bajado, menos queda
   float yPantalla = yPagina - uScroll;
   float subida = smoothstep(0.1, 0.95, 1.0 - yPantalla / uVista);
-  return D - pow(uP, 1.6) * 2.0 - subida * 0.45;
+  return D - (pow(uP, 1.6) * 2.0 + subida * 0.45) * (1.0 - 0.8 * noche);
 }
 
 ${GLSL_MOHO}
@@ -68,9 +83,25 @@ void main() {
   col += (fbm(q * 90.0) - 0.5) * 0.022;
   col += (noise(q * 420.0) - 0.5) * 0.012;
 
+  // A oscuras: la pared casi negra y, donde apunta la linterna, la pared de verdad con luz cálida.
+  // La luz pasa por detrás del texto: el texto de la noche invierte su color (mix-blend-mode)
+  float libre = sinTexto(v);
+  float oscuro = uNoche;                                              // se apaga toda la pantalla: sin bordes
+  float dist = length(v - uLuz);
+  float luz = 1.0 - smoothstep(uRadio * 0.15, uRadio, dist);           // la luz pasa también por detrás del texto
+  float aro = exp(-pow((dist - uRadio * 0.82) / (uRadio * 0.08), 2.0)) * 0.12;
+
+  // El moho, solo donde se ve (a oscuras y fuera de la linterna no se calcula: es lo que cuesta)
   float Dp = densidad(q);
-  if (Dp > -0.45) {
-    col = pintarMoho(col, q, Dp, sinTexto(v), 1.0);
+  bool seVe = oscuro < 0.97 || luz + aro > 0.004;
+  if (Dp > -0.45 && seVe) {
+    col = pintarMoho(col, q, Dp, libre, 1.0);
+  }
+
+  if (oscuro > 0.0) {
+    vec3 noche = col * vec3(0.05, 0.055, 0.07);
+    vec3 linterna = col * vec3(1.0, 0.95, 0.84) * (0.7 + 0.4 * luz);
+    col = mix(col, mix(noche, linterna, clamp(luz + aro, 0.0, 1.0)), oscuro);
   }
 
   gl_FragColor = vec4(col, 1.0);
@@ -116,7 +147,8 @@ export function crearParedPagina(canvas, { escalaMax = 1.25 } = {}) {
   const u = (n) => gl.getUniformLocation(programa, n)
   const U = {
     res: u('uRes'), escala: u('uEscala'), vista: u('uVista'), scroll: u('uScroll'),
-    inicio: u('uInicio'), p: u('uP'), zonas: u('uZonas'), nZonas: u('uNZonas')
+    inicio: u('uInicio'), p: u('uP'), zonas: u('uZonas'), nZonas: u('uNZonas'),
+    oscuro: u('uOscuro'), hayOscuro: u('uHayOscuro'), luz: u('uLuz'), radio: u('uRadio'), noche: u('uNoche')
   }
   const zonas = new Float32Array(MAX_ZONAS_LIMPIAS * 4)
 
@@ -134,8 +166,9 @@ export function crearParedPagina(canvas, { escalaMax = 1.25 } = {}) {
     gl.uniform1f(U.vista, canvas.clientHeight)
   }
 
-  // rects: [{ x0, y0, x1, y1 }] en px CSS de pantalla
-  function dibujar({ scroll, inicio, p, rects = [] }) {
+  // rects: [{ x0, y0, x1, y1 }] en px CSS de pantalla; oscuro: el de la sección de noche (o null)
+  // luz: { x, y, radio } de la linterna
+  function dibujar({ scroll, inicio, p, rects = [], oscuro = null, luz = null, noche = 0 }) {
     gl.uniform1f(U.scroll, scroll)
     gl.uniform1f(U.inicio, inicio)
     gl.uniform1f(U.p, p)
@@ -143,6 +176,13 @@ export function crearParedPagina(canvas, { escalaMax = 1.25 } = {}) {
     for (let i = 0; i < n; i++) zonas.set([rects[i].x0, rects[i].y0, rects[i].x1, rects[i].y1], i * 4)
     gl.uniform4fv(U.zonas, zonas)
     gl.uniform1f(U.nZonas, n)
+    gl.uniform1f(U.hayOscuro, oscuro ? 1 : 0)
+    gl.uniform1f(U.noche, noche)
+    if (oscuro) gl.uniform4f(U.oscuro, oscuro.x0, oscuro.y0, oscuro.x1, oscuro.y1)
+    if (luz) {
+      gl.uniform2f(U.luz, luz.x, luz.y)
+      gl.uniform1f(U.radio, luz.radio)
+    }
     gl.drawArrays(gl.TRIANGLES, 0, 6)
   }
 
