@@ -99,7 +99,9 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
   flex: none;
 }
 .simbolo { height: 36px; width: auto; }
-.nombre { display: flex; flex-direction: column; gap: 3px; }
+/* Las dos piezas, con su proporción (sin estirarse) y casi el mismo ancho, como en su logo */
+.nombre { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.nombre img { object-fit: contain; }
 .overland { height: 16px; width: auto; }
 .restoration { height: 13px; width: auto; display: none; }
 
@@ -202,7 +204,7 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
   .placa { height: 56px; padding: 0 16px 0 10px; gap: 10px; }
   .simbolo { height: 42px; }
   .overland { height: 19px; }
-  .restoration { display: block; height: 15px; }
+  .restoration { display: block; height: auto; width: 139px; }
   .enlaces { display: flex; }
   .cabecera > .llamar { display: inline-flex; }
   .llamar-movil, .menu-movil { display: none; }
