@@ -1,5 +1,5 @@
 <script setup>
-import { crearParedPagina } from '~/utils/paredPagina'
+import { crearParedPagina, TIPOS_DANO } from '~/utils/paredPagina'
 import { useLimpieza } from '~/composables/useLimpieza'
 
 // La pared de toda la página (ver utils/paredPagina.js). Empieza donde acaba el hero
@@ -20,8 +20,13 @@ const luz = { x: 0, y: 0, destinoX: 0, destinoY: 0, ultimoGesto: -1e9, colocada:
 let bucle = 0
 
 function buscarBloques() {
-  // El texto sobre la pared: el moho se aclara debajo (ver .sobre-pared en main.css)
-  bloques = [...document.querySelectorAll('[data-limpio], .sobre-pared, .sobre-pared-2, .mezcla')]
+  // Los bloques con su daño detrás: [data-dano="agua|fuego|tormenta|moho"] (uno o varios) y su
+  // fuerza, [data-fuerza] de 0 a 1 (baja a lo largo de la página)
+  bloques = [...document.querySelectorAll('[data-dano]')].map(el => ({
+    el,
+    fuerza: el.dataset.fuerza ? Number(el.dataset.fuerza) : 1,
+    tipos: el.dataset.dano.split(/\s+/).map(t => TIPOS_DANO[t]).filter(t => t !== undefined)
+  }))
   seccionOscura = document.querySelector('[data-oscuro]')
 }
 
@@ -67,17 +72,18 @@ function pintar(t = performance.now()) {
   progresoPagina.value = p
   if (inicio - scroll > vista) return   // la pared aún no se ve: no se pinta
 
-  const rects = []
-  for (const el of bloques) {
+  // Solo los que tocan la pantalla (con margen: el borde de cada zona se difumina hacia fuera)
+  const danos = []
+  for (const { el, tipos, fuerza } of bloques) {
     const r = el.getBoundingClientRect()
-    if (r.bottom < -60 || r.top > vista + 60 || r.width === 0) continue
-    rects.push({ x0: r.left, y0: r.top, x1: r.right, y1: r.bottom })
+    if (r.bottom < -200 || r.top > vista + 200 || r.width === 0) continue
+    for (const tipo of tipos) danos.push({ x0: r.left, y0: r.top, x1: r.right, y1: r.bottom, tipo, fuerza })
   }
   const oscuro = rectOscuro(vista)
   const linterna = oscuro ? moverLuz(oscuro, t) : null
   // La franja de la noche está siempre a oscuras (con movimiento reducido, también)
   const noche = oscuro ? 1 : 0
-  pared.dibujar({ scroll, inicio, p, rects, oscuro, luz: linterna, noche })
+  pared.dibujar({ scroll, inicio, p, danos, oscuro, luz: linterna, noche })
 
   // Con la noche a la vista, la linterna se mueve sola: se repinta cada fotograma
   if (oscuro && noche > 0 && !reducido) {

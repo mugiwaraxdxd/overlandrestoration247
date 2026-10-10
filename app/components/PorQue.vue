@@ -9,10 +9,9 @@ const VALORES = [
 </script>
 
 <template>
-  <section class="porque">
+  <section class="porque" data-dano="tormenta" data-fuerza="0.85">
     <div class="cabeza">
-      <p v-aparecer class="aparece etiqueta-mono sobre-pared-3">Owner-operated</p>
-      <h2 v-aparecer="80" class="aparece sobre-pared">One owner.<br>No shortcuts.</h2>
+      <h2 v-aparecer="80" class="aparece sobre-pared"><span class="tira">One owner.<br>No shortcuts.</span></h2>
     </div>
 
     <blockquote v-aparecer class="aparece cita">
@@ -22,16 +21,16 @@ const VALORES = [
 
     <div class="rejilla">
       <article v-for="(v, i) in VALORES" :key="v.titulo" class="celda">
-        <span v-aparecer="i * 80" class="aparece numero etiqueta-mono sobre-pared-3">{{ String(i + 1).padStart(2, '0') }}</span>
-        <h3 v-aparecer="i * 80 + 40" class="aparece sobre-pared">{{ v.titulo }}</h3>
-        <p v-aparecer="i * 80 + 80" class="aparece sobre-pared-2">{{ v.texto }}</p>
+        <span v-aparecer="i * 80" class="aparece numero etiqueta-mono sobre-pared-3"><span class="tira">{{ String(i + 1).padStart(2, '0') }}</span></span>
+        <h3 v-aparecer="i * 80 + 40" class="aparece sobre-pared"><span class="tira">{{ v.titulo }}</span></h3>
+        <p v-aparecer="i * 80 + 80" class="aparece sobre-pared-2"><span class="tira">{{ v.texto }}</span></p>
       </article>
     </div>
   </section>
 </template>
 
 <style scoped>
-.porque { position: relative; padding: 112px var(--margen) 120px; display: grid; gap: 40px; }
+.porque { position: relative; padding: 40px var(--margen) 96px; display: grid; gap: 40px; }
 .cabeza { display: grid; gap: 14px; }
 h2 {
   font-weight: 500;

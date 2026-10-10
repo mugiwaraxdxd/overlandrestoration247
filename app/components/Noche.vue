@@ -19,7 +19,7 @@ onBeforeUnmount(() => clearInterval(temporizador))
 </script>
 
 <template>
-  <section class="noche" data-oscuro>
+  <section class="noche" data-oscuro data-dano="agua moho">
     <div class="contenido">
       <p v-aparecer class="aparece reloj etiqueta-mono">
         <span class="disponible" aria-hidden="true" />

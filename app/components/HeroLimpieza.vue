@@ -29,9 +29,9 @@ const restaurada = computed(() => p.value > 0.91)
 // Lo que hacen, a la vista desde el primer segundo (iconos de trazo, 24×24)
 const SERVICIOS = [
   { nombre: 'Water', icono: 'M12 3.5c3.2 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.3-6 5.5-10z' },
-  { nombre: 'Mold', icono: 'M7 9.5a1.6 1.6 0 1 0 0 .01M12.5 6.5a2.2 2.2 0 1 0 0 .01M16.5 11a1.4 1.4 0 1 0 0 .01M10 14a2.6 2.6 0 1 0 0 .01M15.5 16.5a1.8 1.8 0 1 0 0 .01M6.5 16.5a1 1 0 1 0 0 .01' },
   { nombre: 'Fire & smoke', icono: 'M12 3c.5 3 3.5 4.5 3.5 8.5a3.5 3.5 0 0 1-7 0c0-1.6.7-2.7 1.6-3.6.2 1.4.9 2.1 1.9 2.6C12.4 8.6 11.4 6 12 3zM7.5 14.5a4.5 4.5 0 0 0 9 0' },
-  { nombre: 'Storm', icono: 'M4 9.5h11a3 3 0 1 0-3-3M3 13.5h15a3 3 0 1 1-3 3M5 17.5h6' }
+  { nombre: 'Storm', icono: 'M4 9.5h11a3 3 0 1 0-3-3M3 13.5h15a3 3 0 1 1-3 3M5 17.5h6' },
+  { nombre: 'Mold', icono: 'M7 9.5a1.6 1.6 0 1 0 0 .01M12.5 6.5a2.2 2.2 0 1 0 0 .01M16.5 11a1.4 1.4 0 1 0 0 .01M10 14a2.6 2.6 0 1 0 0 .01M15.5 16.5a1.8 1.8 0 1 0 0 .01M6.5 16.5a1 1 0 1 0 0 .01' }
 ]
 
 // Las anotaciones, colocadas para que no se pisen ni con el medidor (ordenador y móvil)
@@ -117,12 +117,13 @@ onBeforeUnmount(() => {
       <div class="texto">
         <p class="etiqueta-mono antetitulo">24/7 emergency restoration · Cape Coral, FL</p>
         <h1>
-          <span class="linea"><span>Water damage</span></span>
-          <span class="linea"><span>&amp; mold removal</span></span>
+          <span class="linea"><span>Water, fire</span></span>
+          <span class="linea"><span>&amp; storm damage.</span></span>
+          <span class="linea"><span>Mold removal.</span></span>
         </h1>
         <p class="entradilla">
-          We make it like it never happened. Owner-operated, licensed and on call 24/7
-          across Cape Coral and Southwest Florida.
+          Restoration that makes it like it never happened. Owner-operated, licensed mold
+          remediator, on call 24/7 across Cape Coral and Southwest Florida.
         </p>
         <ul class="servicios" aria-label="What we restore">
           <li v-for="s in SERVICIOS" :key="s.nombre">

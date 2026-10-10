@@ -4,21 +4,21 @@ const ZONAS = ['Cape Coral', 'Fort Myers', 'Lehigh Acres', 'North Fort Myers', '
 </script>
 
 <template>
-  <section id="zonas" class="zonas">
+  <section id="zonas" class="zonas" data-dano="moho" data-fuerza="0.6">
     <div class="cabeza">
-      <p v-aparecer class="aparece etiqueta-mono sobre-pared-3">Areas we serve · {{ ZONAS.length }} areas · Southwest Florida</p>
-      <h2 v-aparecer="80" class="aparece sobre-pared">Based in Cape Coral.<br>On site fast.</h2>
+      <p v-aparecer class="aparece etiqueta-mono sobre-pared-3"><span class="tira">{{ ZONAS.length }} areas · Southwest Florida</span></p>
+      <h2 v-aparecer="80" class="aparece sobre-pared"><span class="tira">Based in Cape Coral.<br>On site fast.</span></h2>
     </div>
     <ul class="lista">
       <li v-for="(z, i) in ZONAS" :key="z" v-aparecer="i * 40" class="aparece" :class="{ base: i === 0 }">
-        <span class="etiqueta-mono n sobre-pared-3">{{ String(i + 1).padStart(2, '0') }}</span><span class="sobre-pared">{{ z }}</span>
+        <span class="etiqueta-mono n sobre-pared-3"><span class="tira">{{ String(i + 1).padStart(2, '0') }}</span></span><span class="sobre-pared"><span class="tira">{{ z }}</span></span>
       </li>
     </ul>
   </section>
 </template>
 
 <style scoped>
-.zonas { position: relative; padding: 112px var(--margen) 120px; display: grid; gap: 36px; }
+.zonas { position: relative; padding: 40px var(--margen) 96px; display: grid; gap: 36px; }
 .cabeza { display: grid; gap: 14px; }
 h2 {
   font-weight: 500;

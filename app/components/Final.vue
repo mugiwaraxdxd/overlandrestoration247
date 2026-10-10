@@ -27,11 +27,11 @@ function enviar() {
       <p class="etiqueta-mono estado" :class="{ hecho: restaurada }">
         <span class="punto" />Cleanup · {{ porcentaje }}%
       </p>
-      <h2 class="sobre-pared">Back to normal.<br>Like it never happened.</h2>
-      <p class="texto sobre-pared-2">
+      <h2 class="sobre-pared"><span class="tira">Back to normal.<br>Like it never happened.</span></h2>
+      <p class="texto sobre-pared-2"><span class="tira">
         Water, mold, fire or storm: call now and the owner answers, day or night.
         Or send photos of the damage and we'll call you back.
-      </p>
+      </span></p>
       <a class="llamar" :href="SITIO.telefonoEnlace">
         <span class="disponible" aria-hidden="true" />
         <span>Call now</span>

@@ -8,28 +8,27 @@ const DOCUMENTA = [
 </script>
 
 <template>
-  <section class="seguro">
+  <section class="seguro" data-dano="fuego" data-fuerza="0.95">
     <div class="cabeza">
-      <p v-aparecer class="aparece etiqueta-mono sobre-pared-3">Your insurance</p>
-      <h2 v-aparecer="80" class="aparece sobre-pared">We document everything<br>for your claim.</h2>
-      <p v-aparecer="140" class="aparece entradilla sobre-pared-2">
+      <h2 v-aparecer="80" class="aparece sobre-pared"><span class="tira">We document everything<br>for your claim.</span></h2>
+      <p v-aparecer="140" class="aparece entradilla sobre-pared-2"><span class="tira">
         Most homeowner policies cover sudden water damage; gradual damage may not.
         Either way, proper documentation is what gets a claim approved. That part is on us.
-      </p>
+      </span></p>
     </div>
 
     <div class="rejilla">
       <article v-for="(d, i) in DOCUMENTA" :key="d.n" class="celda">
         <span v-aparecer="i * 90" class="aparece anotacion etiqueta-mono">{{ d.n }}</span>
-        <h3 v-aparecer="i * 90 + 40" class="aparece sobre-pared">{{ d.titulo }}</h3>
-        <p v-aparecer="i * 90 + 80" class="aparece sobre-pared-2">{{ d.texto }}</p>
+        <h3 v-aparecer="i * 90 + 40" class="aparece sobre-pared"><span class="tira">{{ d.titulo }}</span></h3>
+        <p v-aparecer="i * 90 + 80" class="aparece sobre-pared-2"><span class="tira">{{ d.texto }}</span></p>
       </article>
     </div>
   </section>
 </template>
 
 <style scoped>
-.seguro { position: relative; padding: 112px var(--margen) 120px; }
+.seguro { position: relative; padding: 40px var(--margen) 96px; }
 .cabeza { display: grid; gap: 14px; margin-bottom: 40px; max-width: 900px; }
 h2 {
   font-weight: 500;

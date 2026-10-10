@@ -11,10 +11,9 @@ const PREGUNTAS = [
 </script>
 
 <template>
-  <section id="preguntas" class="preguntas">
+  <section id="preguntas" class="preguntas" data-dano="agua" data-fuerza="0.4">
     <div class="cabeza">
-      <p v-aparecer class="aparece etiqueta-mono sobre-pared-3">FAQ</p>
-      <h2 v-aparecer="80" class="aparece sobre-pared">Straight answers.</h2>
+      <h2 v-aparecer="80" class="aparece sobre-pared"><span class="tira">Straight answers.</span></h2>
     </div>
     <div class="lista">
       <details v-for="(q, i) in PREGUNTAS" :key="q.p" v-aparecer="i * 60" class="aparece pregunta">
@@ -29,7 +28,7 @@ const PREGUNTAS = [
 </template>
 
 <style scoped>
-.preguntas { position: relative; padding: 112px var(--margen) 120px; display: grid; gap: 36px; }
+.preguntas { position: relative; padding: 40px var(--margen) 96px; display: grid; gap: 36px; }
 .cabeza { display: grid; gap: 14px; }
 h2 {
   font-weight: 500;

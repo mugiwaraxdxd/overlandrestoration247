@@ -13,6 +13,14 @@ Web actual: https://www.overlandrestoration247.com/ (revisada el 2026-10-10)
 - **Sistema de diseño: `DESIGN.md`** (2026-10-10, elegido por el usuario): Freitag adaptado, «informe de obra». Blanco, preciso, monocromo; sus fotos documentales de la galería como protagonistas; Amarillo obra (#ffdd00) solo para llamar y para las anotaciones; Geist + Geist Mono; el logo en una placa negra. Sustituye a la maqueta `design/logo/integracion.html` (lima para llamar y un color por servicio), que queda solo como referencia de las piezas del logo.
 - **Fotos** (2026-10-10, el usuario): las de su galería son las únicas imprescindibles (98, en `design/referencias/fotos-galeria-urls.txt`; hoja de muestra en `fotos-galeria.png`). Para ambiente se pueden usar fotos de banco libres o gráficos generados, **nunca presentados como su trabajo o su equipo**.
 
+## La landing (prototipo, 2026-10-10)
+- **No es una web de moho**: su web abre con agua, y agua, fuego y tormenta son sus servicios principales; el moho, uno más. El titular, los servicios y las tarjetas van en ese orden.
+- **La página es la pared**, con todos los daños que limpian (): cada bloque con  (agua, fuego, tormenta, moho) lleva ese daño detrás y su fuerza () baja a lo largo de la página; se limpia al pasar por encima y al final no queda nada. En «What happened?», cada tarjeta, su daño.
+- **Cada capítulo se abre con una cinta de obra** (): la amarilla de precaución, torcida y con el texto avanzando.
+- El texto sobre la pared va en **tiras de papel** (), como etiquetas pegadas: probados antes el color invertido (no se leía sobre el moho) y un halo (parecía vapor).
+- La noche: franja oscura a todo el ancho con linterna (el ratón o el dedo).
+- El medidor de «How we work» lee esta pared (la limpieza de la página), no sus pasos: nunca dice «Dry» con daño a la vista.
+
 ## Las piezas del logo
 - Está hecho sobre negro. Piezas sacadas del JPG original con el negro hecho transparente (`public/logo/`: `simbolo`, `overland`, `restoration`, `lema`, `logo-transparente`). Se combinan, no se redibujan: en la cabecera de ordenador símbolo + OVERLAND + RESTORATION en horizontal; en el móvil, símbolo + OVERLAND; entero y grande, solo en el pie. Para la versión final, pedirle el archivo vectorial.
 

@@ -1,25 +1,26 @@
 <script setup>
 // «What happened?»: el cliente piensa en su problema, no en un catálogo de 18 servicios.
-// Las celdas son transparentes: la pared (y su moho) se ve a través y el texto invierte su color
+// En el orden de su web: agua, fuego y tormenta primero, luego el moho.
+// Las celdas son transparentes: detrás de cada una, la pared con su daño
 const PROBLEMAS = [
-  { n: '01', titulo: 'Water', linea: 'Leaks, burst pipes, floods. Extraction and structural drying, started within hours.', pasos: ['Extraction', 'Moisture mapping', 'Drying'] },
-  { n: '02', titulo: 'Mold', linea: 'Testing, containment and removal by a Florida licensed mold remediator.', pasos: ['Containment', 'HEPA', 'Clearance test'] },
-  { n: '03', titulo: 'Fire & smoke', linea: 'Soot and odor removal, board-up, and the rebuild after it.', pasos: ['Board-up', 'Soot', 'Odor'] },
-  { n: '04', titulo: 'Storm', linea: 'Hurricane, wind and hail. Tarping first, then everything the storm reached.', pasos: ['Tarping', 'Water removal', 'Repairs'] }
+  { n: '01', dano: 'agua', titulo: 'Water', linea: 'Leaks, burst pipes, floods. Extraction and structural drying, started within hours.', pasos: ['Extraction', 'Moisture mapping', 'Drying'] },
+  { n: '02', dano: 'fuego', titulo: 'Fire & smoke', linea: 'Soot and odor removal, board-up, and the rebuild after it.', pasos: ['Board-up', 'Soot', 'Odor'] },
+  { n: '03', dano: 'tormenta', titulo: 'Storm', linea: 'Hurricane, wind and hail. Tarping first, then everything the storm reached.', pasos: ['Tarping', 'Water removal', 'Repairs'] },
+  { n: '04', dano: 'moho', titulo: 'Mold', linea: 'Testing, containment and removal by a Florida licensed mold remediator.', pasos: ['Containment', 'HEPA', 'Clearance test'] }
 ]
 </script>
 
 <template>
   <section id="servicios" class="problemas">
     <div class="cabeza">
-      <p v-aparecer class="aparece etiqueta-mono sobre-pared-3">What happened?</p>
-      <h2 v-aparecer="80" class="aparece sobre-pared">Tell us what you're looking at. We take it from there.</h2>
+      <h2 v-aparecer="80" class="aparece sobre-pared"><span class="tira">Tell us what you're looking at. We take it from there.</span></h2>
     </div>
     <div class="rejilla">
-      <a v-for="(pr, i) in PROBLEMAS" :key="pr.n" class="celda" href="#">
-        <span v-aparecer="i * 90" class="aparece etiqueta-mono sobre-pared-3">{{ pr.n }}</span>
-        <h3 v-aparecer="i * 90 + 40" class="aparece sobre-pared">{{ pr.titulo }}</h3>
-        <p v-aparecer="i * 90 + 80" class="aparece sobre-pared-2">{{ pr.linea }}</p>
+      <!-- Detrás de cada tarjeta, su daño (lo pinta la pared de la página) -->
+      <a v-for="(pr, i) in PROBLEMAS" :key="pr.n" class="celda" href="#" :data-dano="pr.dano">
+        <span v-aparecer="i * 90" class="aparece etiqueta-mono sobre-pared-3"><span class="tira">{{ pr.n }}</span></span>
+        <h3 v-aparecer="i * 90 + 40" class="aparece sobre-pared"><span class="tira">{{ pr.titulo }}</span></h3>
+        <p v-aparecer="i * 90 + 80" class="aparece sobre-pared-2"><span class="tira">{{ pr.linea }}</span></p>
         <ul v-aparecer="i * 90 + 120" class="aparece sobre-pared">
           <li v-for="paso in pr.pasos" :key="paso" class="etiqueta-mono">{{ paso }}</li>
         </ul>
@@ -32,7 +33,7 @@ const PROBLEMAS = [
 <style scoped>
 .problemas {
   position: relative;
-  padding: 96px var(--margen) 120px;
+  padding: 40px var(--margen) 96px;
 }
 .cabeza { display: grid; gap: 14px; margin-bottom: 40px; max-width: 900px; }
 h2 {
