@@ -15,9 +15,9 @@ Web actual: https://www.overlandrestoration247.com/ (revisada el 2026-10-10)
 
 ## La landing (prototipo, 2026-10-10)
 - **No es una web de moho**: su web abre con agua, y agua, fuego y tormenta son sus servicios principales; el moho, uno más. El titular, los servicios y las tarjetas van en ese orden.
-- **La página es la pared**, con todos los daños que limpian (): cada bloque con  (agua, fuego, tormenta, moho) lleva ese daño detrás y su fuerza () baja a lo largo de la página; se limpia al pasar por encima y al final no queda nada. En «What happened?», cada tarjeta, su daño.
-- **Cada capítulo se abre con una cinta de obra** (): la amarilla de precaución, torcida y con el texto avanzando.
-- El texto sobre la pared va en **tiras de papel** (), como etiquetas pegadas: probados antes el color invertido (no se leía sobre el moho) y un halo (parecía vapor).
+- **La página es la pared**, con todos los daños que limpian (`app/utils/paredPagina.js`): cada bloque con `data-dano` (agua, fuego, tormenta, moho) lleva ese daño detrás y su fuerza (`data-fuerza`) baja a lo largo de la página; se limpia al pasar por encima y al final no queda nada. En «What happened?», cada tarjeta, su daño.
+- **Cada capítulo se abre con una cinta de obra** (`Cinta.vue`): la amarilla de precaución, torcida y con el texto avanzando.
+- El texto sobre la pared va en **tiras de papel** (`.tira`), como etiquetas pegadas: probados antes el color invertido (no se leía sobre el moho) y un halo (parecía vapor).
 - La noche: franja oscura a todo el ancho con linterna (el ratón o el dedo).
 - El medidor de «How we work» lee esta pared (la limpieza de la página), no sus pasos: nunca dice «Dry» con daño a la vista.
 
