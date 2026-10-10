@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overland: el logo dentro de la web</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* El marco donde vive el logo (está hecho para fondo oscuro) */
+    --noche: #07182c;
+    --noche-2: #0c2442;
+    /* Los colores del propio logo, cada uno con su significado */
+    --agua: #1688e8;
+    --fuego: #e8321e;   /* el rojo de FIRE en su lema */
+    --moho: #3fa34d;
+    --lima: #c6f21c;    /* su color más vivo: el de llamar */
+    /* La web */
+    --papel: #f6f8fb;
+    --tinta: #0b1f36;
+    --gris: #5b6b80;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Archivo, system-ui, sans-serif; background: #d9dee6; color: var(--tinta); padding: 32px; }
+  .titulo-maqueta { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: #6b7a8c; font-weight: 700; margin: 0 0 12px; }
+  .marco { background: var(--papel); border-radius: 14px; overflow: hidden; box-shadow: 0 20px 60px rgba(7, 24, 44, .18); margin-bottom: 40px; }
+
+  /* Cabecera: el logo en su casa, sobre oscuro */
+  .cab { background: var(--noche); display: flex; align-items: center; gap: 28px; padding: 16px 32px; }
+  .marca { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .marca .simbolo { height: 62px; }
+  .marca .texto { display: flex; flex-direction: column; gap: 3px; }
+  .marca .texto .ov { height: 30px; }
+  .marca .texto .rs { height: 26px; }
+  .nav { display: flex; gap: 24px; margin-left: auto; }
+  .nav a { color: #c9d4e2; text-decoration: none; font-size: 14.5px; font-weight: 500; }
+  .llamar { display: inline-flex; align-items: center; gap: 10px; background: var(--lima); color: var(--noche); font-weight: 750; font-size: 15px; text-decoration: none; padding: 12px 20px; border-radius: 999px; white-space: nowrap; }
+  .llamar .punto { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; box-shadow: 0 0 0 4px rgba(22, 163, 74, .22); }
+
+  /* Hero de muestra (aquí irá la pared que se limpia) */
+  .hero { padding: 72px 32px 64px; background: linear-gradient(180deg, #fff, var(--papel)); }
+  .hero h1 { font-size: 64px; line-height: .98; font-weight: 850; font-stretch: 112%; letter-spacing: -.02em; max-width: 13ch; }
+  .hero p { margin-top: 18px; font-size: 19px; color: var(--gris); max-width: 46ch; line-height: 1.45; }
+  .hero .acciones { display: flex; gap: 14px; margin-top: 28px; }
+  .btn-sec { display: inline-flex; align-items: center; padding: 12px 20px; border-radius: 999px; border: 1.5px solid var(--tinta); color: var(--tinta); text-decoration: none; font-weight: 650; font-size: 15px; }
+
+  /* La web «explica» el logo: cada color es un servicio */
+  .servicios { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; padding: 0 32px 56px; background: var(--papel); }
+  .serv { border-radius: 18px; padding: 22px; color: #fff; min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; }
+  .serv small { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; opacity: .85; }
+  .serv b { font-size: 24px; font-weight: 800; font-stretch: 110%; line-height: 1.05; }
+  .serv.agua { background: var(--agua); }
+  .serv.fuego { background: var(--fuego); }
+  .serv.moho { background: var(--moho); }
+  .serv.tormenta { background: var(--noche-2); }
+  .serv.tormenta small { color: var(--lima); opacity: 1; }
+
+  /* Pie: el único sitio donde el logo sale entero y grande */
+  .pie { background: var(--noche); padding: 48px 32px; display: grid; grid-template-columns: 300px 1fr; gap: 48px; align-items: center; color: #9fb0c6; font-size: 14.5px; line-height: 1.7; }
+  .pie img { width: 100%; }
+  .pie b { color: #fff; display: block; font-size: 17px; margin-bottom: 4px; }
+
+  /* Móvil */
+  .fila-movil { display: flex; gap: 32px; align-items: flex-start; }
+  .movil { width: 390px; background: var(--papel); border-radius: 28px; overflow: hidden; box-shadow: 0 20px 60px rgba(7, 24, 44, .18); flex: none; }
+  .movil .cab { padding: 12px 16px; gap: 10px; }
+  .movil .marca .simbolo { height: 40px; }
+  .movil .marca .texto .ov { height: 18px; }
+  .movil .icono-llamar { margin-left: auto; width: 44px; height: 44px; border-radius: 50%; background: var(--lima); display: grid; place-items: center; }
+  .movil .hero { padding: 40px 18px 32px; }
+  .movil .hero h1 { font-size: 40px; }
+  .movil .hero p { font-size: 16.5px; }
+  .barra-fija { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; padding: 10px 12px 14px; background: #fff; border-top: 1px solid #e3e8ef; }
+  .barra-fija a { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 14px; border-radius: 14px; font-weight: 750; font-size: 15px; text-decoration: none; }
+  .barra-fija .b1 { background: var(--lima); color: var(--noche); }
+  .barra-fija .b2 { background: var(--noche); color: #fff; }
+  .notas { font-size: 15px; line-height: 1.6; color: #34445a; max-width: 520px; }
+  .notas li { margin: 0 0 10px 18px; }
+</style>
+</head>
+<body>
+
+<p class="titulo-maqueta">Ordenador</p>
+<div class="marco">
+  <header class="cab">
+    <a class="marca" href="#">
+      <img class="simbolo" src="../../public/logo/simbolo.png" alt="">
+      <span class="texto">
+        <img class="ov" src="../../public/logo/overland.png" alt="Overland">
+        <img class="rs" src="../../public/logo/restoration.png" alt="Restoration 24/7">
+      </span>
+    </a>
+    <nav class="nav"><a href="#">Services</a><a href="#">How we work</a><a href="#">Our work</a><a href="#">Reviews</a><a href="#">Areas</a></nav>
+    <a class="llamar" href="#"><span class="punto"></span>Call 24/7 · 239-287-4908</a>
+  </header>
+  <section class="hero">
+    <h1>Water in your home? We're on our way.</h1>
+    <p>Owner-operated restoration in Cape Coral and Southwest Florida. Licensed mold remediator, 15+ years, day or night.</p>
+    <div class="acciones"><a class="llamar" href="#"><span class="punto"></span>Call now</a><a class="btn-sec" href="#">Send photos of the damage</a></div>
+  </section>
+  <section class="servicios">
+    <div class="serv agua"><small>Water</small><b>Leaks, floods &amp; burst pipes</b></div>
+    <div class="serv fuego"><small>Fire</small><b>Fire, smoke &amp; soot</b></div>
+    <div class="serv moho"><small>Mold</small><b>Mold testing &amp; removal</b></div>
+    <div class="serv tormenta"><small>Storm 24/7</small><b>Hurricane, wind &amp; hail</b></div>
+  </section>
+  <footer class="pie">
+    <img src="../../public/logo/logo-transparente.png" alt="Overland Restoration 24/7">
+    <div><b>Overland Restoration 24/7</b>229 SW 35th St, Cape Coral, FL 33914<br>239-287-4908 · Open 24/7<br>Florida Licensed Mold Remediation Contractor · MRSR5117</div>
+  </footer>
+</div>
+
+<p class="titulo-maqueta">Móvil</p>
+<div class="fila-movil">
+  <div class="movil">
+    <header class="cab">
+      <a class="marca" href="#">
+        <img class="simbolo" src="../../public/logo/simbolo.png" alt="">
+        <span class="texto"><img class="ov" src="../../public/logo/overland.png" alt="Overland"></span>
+      </a>
+      <span class="icono-llamar"><svg width="20" height="20" viewBox="0 0 24 24" fill="#07182c"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></span>
+    </header>
+    <section class="hero">
+      <h1>Water in your home? We're on our way.</h1>
+      <p>Owner-operated restoration in Cape Coral. Licensed, 15+ years, day or night.</p>
+    </section>
+    <div class="barra-fija"><a class="b1" href="#">Call 24/7</a><a class="b2" href="#">Send photos</a></div>
+  </div>
+  <ul class="notas">
+    <li><b>El logo vive en oscuro</b>: está hecho sobre negro, así que la cabecera y el pie son azul noche y el resto de la web, claro.</li>
+    <li><b>Se usan sus piezas, no se redibuja</b>: símbolo + OVERLAND + RESTORATION en horizontal para la cabecera; en el móvil, símbolo + OVERLAND.</li>
+    <li><b>Entero y grande solo en el pie</b>: el protagonista del hero es el mensaje y el botón de llamar, no el logo.</li>
+    <li><b>La web explica sus colores</b>: azul agua, rojo fuego, verde moho (los de su lema); cada uno vuelve como el color de su servicio. El arcoíris deja de ser ruido y pasa a ser un código.</li>
+    <li><b>Un solo color para actuar</b>: el lima de su anillo y su barra, el más vivo del logo, solo en «Call». Ningún servicio lo usa.</li>
+  </ul>
+</div>
+</body>
+</html>

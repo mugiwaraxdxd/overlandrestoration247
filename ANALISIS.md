@@ -9,6 +9,15 @@ Web actual: https://www.overlandrestoration247.com/ (revisada el 2026-10-10)
 - **Es una demo para vendérsela** (2026-10-10): con su contenido público real; sin inventar reseñas (lo que falte, «a confirmar»); se publica en una URL privada sin indexar, nunca como si fuera su web oficial.
 - **Alcance**: landing fuerte + una página por problema (agua, moho, fuego/humo, tormenta) y por ciudad, conservando o redirigiendo las URLs actuales para no perder Google.
 
+- **El logo no se toca** (2026-10-10, lo decidió el usuario): se usa tal cual. La versión web que se propuso (`design/logo/propuestas.html`) queda solo como idea para más adelante.
+
+## Cómo vive el logo en la web (maqueta: `design/logo/integracion.html`)
+- Está hecho sobre negro: cabecera y pie en azul noche (#07182c), el resto de la web en claro.
+- Piezas sacadas del JPG original con el negro hecho transparente (`public/logo/`: `simbolo`, `overland`, `restoration`, `lema`, `logo-transparente`). Se combinan, no se redibujan: en la cabecera de ordenador símbolo + OVERLAND + RESTORATION en horizontal; en el móvil, símbolo + OVERLAND; entero y grande, solo en el pie. Para la versión final, pedirle el archivo vectorial.
+- La web explica sus colores: azul agua (#1688e8), rojo fuego (#e8321e), verde moho (#3fa34d), los de su lema; cada uno es el color de su servicio. Tormenta, en azul noche.
+- **Lima (#c6f21c), el color más vivo del logo, solo para llamar** (con texto azul noche). Ningún servicio lo usa.
+- Tipografía: Archivo, ancha y gruesa en los titulares (eco del OVERLAND del logo).
+
 ## Diagnóstico de la web actual
 1. Habla de su catálogo (18 servicios iguales), no del problema del cliente. El cliente piensa en 4 cosas: agua, moho, fuego, tormenta.
 2. Esconde su ventaja: el dueño hace el trabajo («I work directly with every customer»), pero no hay ni nombre ni cara.
@@ -17,7 +26,7 @@ Web actual: https://www.overlandrestoration247.com/ (revisada el 2026-10-10)
 5. Errores que restan credibilidad: errata del titular, enlace de Estero a Naples, dirección distinta en los datos para Google, 5 tipografías.
 
 ## Dirección propuesta (pendiente de validar con el prototipo)
-- Base «calma en la emergencia»: limpia, cuidada, color de marca; la urgencia en los botones de llamar (barra fija en el móvil: Call 24/7 + Send photos).
+- Base clara y viva (el usuario descartó Brex por apagado): titulares grandes y gruesos, bloques de color a todo el ancho, fotos reales grandes y movimiento; la urgencia en los botones de llamar (barra fija en el móvil: Call 24/7 + Send photos).
 - **Efecto de firma** (idea del usuario): el hero es una pared dañada con todo lo que ellos limpian, en capas: cercos de agua y humedad, moho saliendo de un enchufe (como su foto de la galería) y hollín arriba. Con el scroll se seca y se limpia capa a capa hasta quedar impecable: el scroll es la restauración. Shader WebGL ligero, sin librerías; texto y botón limpios encima desde el principio; acaba en pantalla y media; con reduced-motion o sin WebGL, la pared limpia. Realista y sobrio, no de terror.
 - Otras animaciones, solo con sentido: medidor de humedad de rojo a verde en «Cómo trabajamos», antes/después arrastrable con sus fotos, cifras al entrar en pantalla, «Available now».
 - Estructura: hero → fila de confianza (licencia, 15 años, nota de Google, 24/7) → «What happened?» (4 problemas) → qué hacer ahora mismo → cómo trabajamos (con el seguro) → el dueño → trabajos reales → reseñas → zonas → FAQ (6) → formulario con fotos.
