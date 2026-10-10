@@ -26,6 +26,14 @@ const seco = computed(() => humedad.value <= 16)
 const limpieza = computed(() => Math.round(pTotal.value * 100))
 const restaurada = computed(() => p.value > 0.91)
 
+// Lo que hacen, a la vista desde el primer segundo (iconos de trazo, 24×24)
+const SERVICIOS = [
+  { nombre: 'Water', icono: 'M12 3.5c3.2 4 5.5 7 5.5 10a5.5 5.5 0 0 1-11 0c0-3 2.3-6 5.5-10z' },
+  { nombre: 'Mold', icono: 'M7 9.5a1.6 1.6 0 1 0 0 .01M12.5 6.5a2.2 2.2 0 1 0 0 .01M16.5 11a1.4 1.4 0 1 0 0 .01M10 14a2.6 2.6 0 1 0 0 .01M15.5 16.5a1.8 1.8 0 1 0 0 .01M6.5 16.5a1 1 0 1 0 0 .01' },
+  { nombre: 'Fire & smoke', icono: 'M12 3c.5 3 3.5 4.5 3.5 8.5a3.5 3.5 0 0 1-7 0c0-1.6.7-2.7 1.6-3.6.2 1.4.9 2.1 1.9 2.6C12.4 8.6 11.4 6 12 3zM7.5 14.5a4.5 4.5 0 0 0 9 0' },
+  { nombre: 'Storm', icono: 'M4 9.5h11a3 3 0 1 0-3-3M3 13.5h15a3 3 0 1 1-3 3M5 17.5h6' }
+]
+
 // Las anotaciones, colocadas para que no se pisen ni con el medidor (ordenador y móvil)
 const esMovil = ref(false)
 const ANOTACIONES = {
@@ -37,7 +45,7 @@ const ANOTACIONES = {
   movil: {
     hollin: { x: 86, y: 10, dx: -26, dy: 46 },
     moho: { x: 40, y: 68, dx: 34, dy: -62 },
-    agua: { x: 82, y: 76, dx: -22, dy: 36 }
+    agua: { x: 84, y: 80, dx: -18, dy: -46 }
   }
 }
 const sitio = computed(() => ANOTACIONES[esMovil.value ? 'movil' : 'ordenador'])
@@ -109,14 +117,19 @@ onBeforeUnmount(() => {
       <div class="texto">
         <p class="etiqueta-mono antetitulo">24/7 emergency restoration · Cape Coral, FL</p>
         <h1>
-          <span class="linea"><span>We make it</span></span>
-          <span class="linea"><span>like it never</span></span>
-          <span class="linea"><span>happened.</span></span>
+          <span class="linea"><span>Water damage</span></span>
+          <span class="linea"><span>&amp; mold removal</span></span>
         </h1>
         <p class="entradilla">
-          Water, mold, fire and storm damage across Cape Coral and Southwest Florida.
-          Owner-operated: you deal with the owner, not a call center.
+          We make it like it never happened. Owner-operated, licensed and on call 24/7
+          across Cape Coral and Southwest Florida.
         </p>
+        <ul class="servicios" aria-label="What we restore">
+          <li v-for="s in SERVICIOS" :key="s.nombre">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path :d="s.icono" /></svg>
+            {{ s.nombre }}
+          </li>
+        </ul>
         <div class="acciones">
           <a class="llamar" :href="SITIO.telefonoEnlace">
             <span class="disponible" aria-hidden="true" />
@@ -126,9 +139,10 @@ onBeforeUnmount(() => {
           <a class="btn-sec" href="#fotos">Send photos of the damage</a>
         </div>
         <dl class="datos">
-          <div><dt class="etiqueta-mono">Answered</dt><dd>24/7</dd></div>
+          <div><dt class="etiqueta-mono">Emergency line</dt><dd>24/7</dd></div>
           <div><dt class="etiqueta-mono">Experience</dt><dd>{{ SITIO.anos }}+ yrs</dd></div>
           <div><dt class="etiqueta-mono">FL mold license</dt><dd>{{ SITIO.licencia }}</dd></div>
+          <div><dt class="etiqueta-mono">Insurance claims</dt><dd>We document</dd></div>
         </dl>
       </div>
 
@@ -213,6 +227,32 @@ h1 {
 @keyframes entrar { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
 .acciones, .datos { display: none; }
+
+.servicios {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  margin: 0 calc(-1 * var(--margen));
+  padding: 0 var(--margen);
+  overflow-x: auto;
+  scrollbar-width: none;
+  list-style: none;
+  animation: entrar .7s var(--curva) .42s both;
+}
+.servicios::-webkit-scrollbar { display: none; }
+.servicios li {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px 0 9px;
+  border-radius: var(--radio-pildora);
+  box-shadow: inset 0 0 0 1px var(--carbon);
+  font-size: 14px;
+  font-weight: 500;
+}
+.servicios svg { fill: none; stroke: var(--carbon); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ---- La pared ---- */
 .pared {
@@ -327,7 +367,9 @@ h1 {
     gap: 22px;
     padding: 40px clamp(32px, 4vw, 72px);
   }
-  h1 { font-size: clamp(56px, 6.2vw, 104px); }
+  h1 { font-size: clamp(44px, 4.6vw, 80px); }
+  .servicios { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; }
+  .servicios li { height: 36px; font-size: 15px; padding: 0 14px 0 11px; }
   .entradilla { font-size: 18px; }
   .acciones {
     display: flex;
@@ -338,16 +380,16 @@ h1 {
   }
   .datos {
     display: grid;
-    grid-template-columns: repeat(3, auto);
+    grid-template-columns: repeat(4, auto);
     justify-content: start;
     margin-top: 18px;
     border-top: 1px solid var(--hormigon);
     animation: entrar .7s var(--curva) .55s both;
   }
-  .datos > div { padding: 14px 28px 0 0; margin-right: 28px; border-right: 1px solid var(--hormigon); }
+  .datos > div { padding: 14px 22px 0 0; margin-right: 22px; border-right: 1px solid var(--hormigon); }
   .datos > div:last-child { border-right: 0; margin-right: 0; }
   .datos dt { color: var(--ceniza); font-size: 11px; }
-  .datos dd { font-family: var(--fuente-datos); font-weight: 500; font-size: 22px; letter-spacing: .02em; margin-top: 4px; }
+  .datos dd { font-family: var(--fuente-datos); font-weight: 500; font-size: 19px; letter-spacing: .02em; margin-top: 4px; white-space: nowrap; }
   .medidor { left: 24px; top: 24px; width: 172px; }
   .lectura { font-size: 48px; }
   .pista { bottom: 28px; }
