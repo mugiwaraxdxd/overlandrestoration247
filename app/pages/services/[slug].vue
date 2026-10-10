@@ -40,12 +40,13 @@ useHead(() => ({
             <a class="llamar" :href="SITIO.telefonoEnlace"><Icono nombre="telefono" />Call 24/7 · {{ SITIO.telefono }}</a>
             <NuxtLink class="btn-sec" to="#fotos"><Icono nombre="camara" />Send photos</NuxtLink>
           </div>
-        </div>
-        <div class="tarjeta incluye">
-          <p class="titulo-incluye">What this covers</p>
-          <ul>
+          <ul class="incluye">
             <li v-for="sub in s.sub" :key="sub"><Icono nombre="check" />{{ sub }}</li>
           </ul>
+        </div>
+        <!-- Su animación, grande y en bucle: dañado, restaurado, y otra vez -->
+        <div class="marco-escena">
+          <EscenaServicio :tipo="s.icono" ciclo />
           <p class="nota"><span class="disponible" aria-hidden="true" />On call 24/7 across Southwest Florida</p>
         </div>
       </div>
@@ -140,12 +141,11 @@ useHead(() => ({
 h1 { font-size: clamp(34px, 5vw, 60px); font-weight: 800; line-height: 1.05; letter-spacing: -.025em; }
 .acciones { display: flex; flex-wrap: wrap; gap: 12px; }
 .acciones svg { width: 20px; height: 20px; }
-.incluye { padding: 28px; display: grid; gap: 14px; }
-.titulo-incluye { font-weight: 800; font-size: 18px; }
-.incluye ul { list-style: none; padding: 0; display: grid; gap: 10px; }
-.incluye li { display: flex; align-items: center; gap: 10px; font-weight: 600; }
-.incluye li svg { width: 18px; height: 18px; color: var(--verde); stroke-width: 2.4; flex: none; }
-.nota { display: flex; align-items: center; gap: 10px; padding-top: 14px; border-top: 1px solid var(--linea); color: var(--tinta-3); font-size: 14px; }
+.incluye { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.incluye li { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px 0 10px; border-radius: var(--pildora); background: var(--blanco); box-shadow: inset 0 0 0 1px var(--linea); font-size: 14px; font-weight: 600; }
+.incluye li svg { width: 16px; height: 16px; color: var(--verde); stroke-width: 2.4; flex: none; }
+.marco-escena { display: grid; gap: 12px; padding: 10px; border-radius: 24px; background: var(--blanco); box-shadow: var(--sombra-alta); }
+.nota { display: flex; align-items: center; gap: 10px; padding: 2px 8px 4px; color: var(--tinta-3); font-size: 14px; }
 .nota .disponible { background: var(--verde); }
 .nota .disponible::after { background: var(--verde); }
 
@@ -164,7 +164,7 @@ h1 { font-size: clamp(34px, 5vw, 60px); font-weight: 800; line-height: 1.05; let
 @media (min-width: 800px) { .rejilla-3 { grid-template-columns: repeat(2, 1fr); } .beneficios { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 1000px) {
   .cabecera-servicio { padding: 64px 0 88px; }
-  .rejilla { grid-template-columns: 1.4fr 1fr; gap: 64px; }
+  .rejilla { grid-template-columns: 1.1fr 1fr; gap: 56px; }
   .rejilla-3 { grid-template-columns: repeat(3, 1fr); }
   .dos-columnas { display: grid; grid-template-columns: 1fr 1.5fr; gap: 56px; align-items: start; }
   .beneficios { grid-template-columns: 1fr; }

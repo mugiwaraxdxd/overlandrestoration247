@@ -31,7 +31,8 @@ useHead({ title: '' })
       </div>
     </section>
 
-    <BandaNoche />
+    <!-- Las 2 a.m.: la pared a oscuras y una linterna -->
+    <NocheLinterna />
 
     <section class="seccion">
       <div class="envoltura">

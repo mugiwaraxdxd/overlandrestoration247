@@ -1,7 +1,8 @@
 <script setup>
 import { SERVICIOS } from '~/utils/contenido'
 
-// Los cuatro servicios, en el orden de su web; cada uno lleva a su página.
+// Los cuatro servicios, en el orden de su web; cada uno lleva a su página y su animación arriba
+// (se restaura al pasar el ratón por la tarjeta o, en el móvil, al llegar a ella).
 // «menos»: el slug que no se enseña (en la página de un servicio, los otros tres)
 const props = defineProps({ menos: { type: String, default: '' } })
 const lista = computed(() => SERVICIOS.filter(s => s.slug !== props.menos))
@@ -10,7 +11,7 @@ const lista = computed(() => SERVICIOS.filter(s => s.slug !== props.menos))
 <template>
   <div class="rejilla" :class="{ tres: lista.length === 3 }">
     <NuxtLink v-for="(s, i) in lista" :key="s.slug" v-aparecer="i * 80" :to="`/services/${s.slug}`" class="aparece tarjeta servicio">
-      <span class="icono-circulo"><Icono :nombre="s.icono" /></span>
+      <EscenaServicio :tipo="s.icono" class="escena-tarjeta" />
       <h3>{{ s.titulo }}</h3>
       <p>{{ s.corto }}</p>
       <ul>
@@ -23,7 +24,9 @@ const lista = computed(() => SERVICIOS.filter(s => s.slug !== props.menos))
 
 <style scoped>
 .rejilla { display: grid; gap: 20px; }
-.servicio { display: grid; align-content: start; gap: 14px; padding: 28px 26px; }
+.servicio { display: grid; align-content: start; gap: 14px; padding: 14px 14px 26px; }
+.servicio > :not(.escena-tarjeta) { margin: 0 12px; }
+.escena-tarjeta { margin-bottom: 6px; }
 h3 { font-size: 22px; font-weight: 800; line-height: 1.2; letter-spacing: -.01em; }
 p { color: var(--tinta-2); font-size: 16px; }
 ul { list-style: none; padding: 0; display: grid; gap: 6px; margin: 2px 0 6px; }
