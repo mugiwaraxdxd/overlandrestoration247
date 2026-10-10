@@ -15,9 +15,9 @@ Web actual: https://www.overlandrestoration247.com/ (revisada el 2026-10-10)
 
 ## La web (prototipo, 2026-10-10)
 - **No es una web de moho**: agua, fuego y tormenta son sus servicios principales; el moho, uno más. Ese orden en todo.
-- **La suciedad, solo en el hero** (la pared que se limpia con el scroll,  + ). Se probó la pared de fondo por toda la página con agua, fuego, tormenta y moho (commits hasta ): ensuciaba la marca y obligaba a parchear la lectura. Descartada.
-- **Páginas**: portada,  (sus 21 servicios agrupados en 4),  y una por ciudad, , . Sus URLs de siempre redirigen (301,  de ).
-- **Contenido**: todo de su web, con  → ; ordenado en . Su web tiene relleno publicado que se filtra: «Lorem ipsum», «(Location)», «(Company Name)» y preguntas de plantilla («What is an FAQ?») en sus páginas de ciudad. **Contárselo en la propuesta**: es un argumento más.
+- **La suciedad, solo en el hero** (la pared que se limpia con el scroll, `HeroLimpieza.vue` + `utils/paredDanada.js`). Se probó la pared de fondo por toda la página con agua, fuego, tormenta y moho (commits hasta `f6e6c05`): ensuciaba la marca y obligaba a parchear la lectura. Descartada.
+- **Páginas**: portada, `/services/water-damage|fire-smoke|storm-damage|mold-remediation` (sus 21 servicios agrupados en 4), `/areas` y una por ciudad, `/faq`, `/contact`. Sus URLs de siempre redirigen (301, `routeRules` de `nuxt.config.ts`).
+- **Contenido**: todo de su web, con `scripts/extraer-contenido.mjs` → `app/utils/contenidoWeb.json`; ordenado en `app/utils/contenido.js`. Su web tiene relleno publicado que se filtra: «Lorem ipsum», «(Location)», «(Company Name)» y preguntas de plantilla («What is an FAQ?») en sus páginas de ciudad. **Contárselo en la propuesta**: es un argumento más.
 - El formulario de fotos es de demo (no envía).
 
 ## Las piezas del logo
