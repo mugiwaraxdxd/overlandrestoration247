@@ -105,7 +105,8 @@ Borde 1px Hormigón, radio 12px, 52px de alto, etiqueta visible encima (nunca so
 
 ## Fotos
 
-- **Las de su galería son la prueba**: se usan tal cual (solo recortadas), con sus anotaciones amarillas incluidas. Formato vertical 3:4, a sangre en su celda.
+- **Sus fotos no son la base del diseño** (2026-10-10, el usuario: están mal tiradas y poco cuidadas). La imagen principal es generada: la pared dañada del hero (`app/utils/paredDanada.js`), que se limpia con el scroll.
+- Las de su galería, como mucho en la sección de trabajos, solo las pocas que se salven: tal cual (recortadas), con sus anotaciones amarillas. Formato vertical 3:4, a sangre en su celda.
 - **Fotos de banco o gráficos generados**, solo de ambiente (cielo de huracán, agua, una casa de Florida, una textura), y **nunca presentados como su trabajo ni su equipo**.
 - Nada de familias felices de banco, ni técnicos sonrientes de banco, ni ilustraciones o 3D.
 - El dueño, con su foto real (pendiente de conseguir).
