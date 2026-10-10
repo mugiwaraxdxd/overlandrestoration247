@@ -13,7 +13,7 @@ useHead({ title: 'Areas we serve in Southwest Florida' })
     </section>
     <section class="seccion">
       <div class="envoltura">
-        <ZonasChips />
+        <MapaZonas />
       </div>
     </section>
     <BandaNoche />

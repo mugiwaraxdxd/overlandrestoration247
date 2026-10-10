@@ -21,15 +21,8 @@ useHead({ title: '' })
       </div>
     </section>
 
-    <section id="como-trabajamos" class="seccion">
-      <div class="envoltura">
-        <div class="cabeza-seccion">
-          <p v-aparecer class="aparece antetitulo">How we work</p>
-          <h2 v-aparecer="80" class="aparece titulo-2">From your call to a dry, restored home.</h2>
-        </div>
-        <Pasos />
-      </div>
-    </section>
+    <!-- Cómo trabajan, contado con el scroll -->
+    <ProcesoScroll />
 
     <!-- Las 2 a.m.: la pared a oscuras y una linterna -->
     <NocheLinterna />
@@ -56,7 +49,7 @@ useHead({ title: '' })
           <p v-aparecer class="aparece antetitulo">Areas we serve</p>
           <h2 v-aparecer="80" class="aparece titulo-2">Based in Cape Coral. Across Southwest Florida.</h2>
         </div>
-        <ZonasChips />
+        <MapaZonas />
       </div>
     </section>
 
