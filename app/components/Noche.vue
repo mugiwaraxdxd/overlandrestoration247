@@ -2,6 +2,7 @@
 import { SITIO } from '~/utils/sitio'
 
 // La sección de noche: la misma pared, a oscuras, con una linterna (la pinta ParedPagina).
+// Aquí el moho sí pasa por detrás del texto: el texto invierte su color y se lee igual.
 // El 24/7 contado con la hora de verdad en Cape Coral.
 const hora = ref('')
 const formato = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', second: '2-digit' })
@@ -20,16 +21,16 @@ onBeforeUnmount(() => clearInterval(temporizador))
 <template>
   <section class="noche" data-oscuro>
     <div class="contenido">
-      <p v-aparecer class="aparece reloj etiqueta-mono" data-limpio>
+      <p v-aparecer class="aparece reloj etiqueta-mono">
         <span class="disponible" aria-hidden="true" />
         Cape Coral · <span class="hora">{{ hora || '—' }}</span> · On call right now
       </p>
-      <h2 v-aparecer="80" class="aparece" data-limpio>2 a.m. and there's water on the floor?<br>Call. We pick up.</h2>
-      <p v-aparecer="160" class="aparece texto" data-limpio>
+      <h2 v-aparecer="80" class="aparece">2 a.m. and there's water on the floor?<br>Call. We pick up.</h2>
+      <p v-aparecer="160" class="aparece texto">
         Water keeps moving while you wait, and mold can start in 24 to 48 hours.
         Night, weekend or holiday, you get the owner on the phone, not an answering service.
       </p>
-      <a v-aparecer="240" class="aparece llamar" :href="SITIO.telefonoEnlace" data-limpio>
+      <a v-aparecer="240" class="aparece llamar" :href="SITIO.telefonoEnlace">
         <span class="disponible" aria-hidden="true" />
         <span>Call now</span>
         <span class="numero">{{ SITIO.telefono }}</span>
