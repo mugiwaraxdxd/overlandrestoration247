@@ -45,15 +45,16 @@ const largo = computed(() => Math.hypot(props.dx, props.dy))
 
 .punto {
   position: absolute;
-  left: -5px;
-  top: -5px;
-  width: 10px;
-  height: 10px;
+  left: -6px;
+  top: -6px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: var(--obra);
-  border: 2px solid var(--carbon);
+  background: var(--naranja);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .9), 0 2px 6px rgba(15, 36, 64, .3);
   animation: aparecer .3s var(--curva) both;
   animation-delay: var(--retraso);
+  transition: background-color .35s var(--curva);
 }
 
 /* La línea crece desde el punto */
@@ -67,8 +68,10 @@ const largo = computed(() => Math.hypot(props.dx, props.dy))
 .anotacion.izquierda .trazo { left: auto; right: -1px; }
 .anotacion:not(.abajo) .trazo { top: auto; bottom: -1px; }
 .trazo line {
-  stroke: var(--carbon);
-  stroke-width: 1.25;
+  stroke: rgba(255, 255, 255, .95);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 1px 1px rgba(15, 36, 64, .35));
   stroke-dasharray: calc(var(--largo) * 1px);
   stroke-dashoffset: calc(var(--largo) * 1px);
   animation: trazar .5s var(--curva) forwards;
@@ -83,41 +86,37 @@ const largo = computed(() => Math.hypot(props.dx, props.dy))
   animation: aparecer .35s var(--curva) both;
   animation-delay: calc(var(--retraso) + 550ms);
 }
-.rotulo > .cara { margin-top: -14px; }
+.rotulo > .cara { margin-top: -17px; }
 .anotacion.izquierda .rotulo > .cara { translate: -100% 0; }
 
 .cara {
   grid-area: 1 / 1;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  height: 28px;
-  padding: 0 10px;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px 0 12px;
+  border-radius: var(--pildora);
+  background: var(--blanco);
+  box-shadow: var(--sombra);
   white-space: nowrap;
-  font-family: var(--fuente-datos);
-  font-weight: 500;
-  font-size: 11.5px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--carbon);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--tinta);
   transition: opacity .35s var(--curva), transform .35s var(--curva);
 }
-.antes { background: var(--obra); }
-.despues {
-  background: var(--papel);
-  box-shadow: inset 0 0 0 1px var(--carbon);
-  opacity: 0;
-  transform: translateY(6px);
-}
-.check {
+.antes::before {
+  content: '';
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--seco);
+  background: var(--naranja);
 }
+.despues { opacity: 0; transform: translateY(6px); color: var(--verde); }
+.check { width: 8px; height: 8px; border-radius: 50%; background: var(--verde); }
 .hecho .antes { opacity: 0; transform: translateY(-6px); }
 .hecho .despues { opacity: 1; transform: none; }
-.hecho .punto { background: var(--seco); transition: background-color .35s var(--curva); }
+.hecho .punto { background: var(--verde); }
 
 @keyframes trazar { to { stroke-dashoffset: 0; } }
 @keyframes aparecer { from { opacity: 0; scale: .85; } to { opacity: 1; scale: 1; } }

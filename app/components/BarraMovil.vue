@@ -8,7 +8,7 @@ import { SITIO } from '~/utils/sitio'
     <a class="llamar" :href="SITIO.telefonoEnlace">
       <span class="disponible" aria-hidden="true" />Call 24/7
     </a>
-    <a class="fotos" href="#fotos">Send photos</a>
+    <NuxtLink class="btn-sec" to="/contact#fotos"><Icono nombre="camara" />Send photos</NuxtLink>
   </div>
 </template>
 
@@ -18,29 +18,15 @@ import { SITIO } from '~/utils/sitio'
   inset: auto 0 0;
   z-index: 50;
   display: grid;
-  grid-template-columns: 1.35fr 1fr;
-  gap: 8px;
-  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
-  background: var(--papel);
-  border-top: 1px solid var(--hormigon);
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, .1);
+  grid-template-columns: 1.3fr 1fr;
+  gap: 10px;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, .96);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--linea);
 }
-.barra-movil a {
-  justify-content: center;
-  height: 52px;
-  border-radius: var(--radio);
-  font-size: 16px;
-}
-.fotos {
-  display: flex;
-  align-items: center;
-  background: var(--carbon);
-  color: var(--papel);
-  font-weight: 500;
-  text-decoration: none;
-}
-.fotos:active { transform: scale(.97); }
-
+.barra-movil a { min-height: 52px; font-size: 16px; }
+.btn-sec svg { width: 20px; height: 20px; }
 @media (min-width: 900px) {
   .barra-movil { display: none; }
 }
