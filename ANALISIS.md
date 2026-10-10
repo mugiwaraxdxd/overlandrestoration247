@@ -10,16 +10,15 @@ Web actual: https://www.overlandrestoration247.com/ (revisada el 2026-10-10)
 - **Alcance**: landing fuerte + una página por problema (agua, moho, fuego/humo, tormenta) y por ciudad, conservando o redirigiendo las URLs actuales para no perder Google.
 
 - **El logo no se toca** (2026-10-10, lo decidió el usuario): se usa tal cual. La versión web que se propuso (`design/logo/propuestas.html`) queda solo como idea para más adelante.
-- **Sistema de diseño: `DESIGN.md`** (2026-10-10, elegido por el usuario): Freitag adaptado, «informe de obra». Blanco, preciso, monocromo; sus fotos documentales de la galería como protagonistas; Amarillo obra (#ffdd00) solo para llamar y para las anotaciones; Geist + Geist Mono; el logo en una placa negra. Sustituye a la maqueta `design/logo/integracion.html` (lima para llamar y un color por servicio), que queda solo como referencia de las piezas del logo.
+- **Sistema de diseño: `DESIGN.md`, «Hogar en calma»** (2026-10-10, elegido por el usuario): blanco, azul de su logo, el naranja de su llama solo para llamar, Plus Jakarta Sans, tarjetas redondeadas. Sustituye al «informe de obra» (Freitag), que parecía policial.
 - **Fotos** (2026-10-10, el usuario): las de su galería son las únicas imprescindibles (98, en `design/referencias/fotos-galeria-urls.txt`; hoja de muestra en `fotos-galeria.png`). Para ambiente se pueden usar fotos de banco libres o gráficos generados, **nunca presentados como su trabajo o su equipo**.
 
-## La landing (prototipo, 2026-10-10)
-- **No es una web de moho**: su web abre con agua, y agua, fuego y tormenta son sus servicios principales; el moho, uno más. El titular, los servicios y las tarjetas van en ese orden.
-- **La página es la pared**, con todos los daños que limpian (`app/utils/paredPagina.js`): cada bloque con `data-dano` (agua, fuego, tormenta, moho) lleva ese daño detrás y su fuerza (`data-fuerza`) baja a lo largo de la página; se limpia al pasar por encima y al final no queda nada. En «What happened?», cada tarjeta, su daño.
-- **Cada capítulo se abre con una cinta de obra** (`Cinta.vue`): la amarilla de precaución, torcida y con el texto avanzando.
-- El texto sobre la pared va en **tiras de papel** (`.tira`), como etiquetas pegadas: probados antes el color invertido (no se leía sobre el moho) y un halo (parecía vapor).
-- La noche: franja oscura a todo el ancho con linterna (el ratón o el dedo).
-- El medidor de «How we work» lee esta pared (la limpieza de la página), no sus pasos: nunca dice «Dry» con daño a la vista.
+## La web (prototipo, 2026-10-10)
+- **No es una web de moho**: agua, fuego y tormenta son sus servicios principales; el moho, uno más. Ese orden en todo.
+- **La suciedad, solo en el hero** (la pared que se limpia con el scroll,  + ). Se probó la pared de fondo por toda la página con agua, fuego, tormenta y moho (commits hasta ): ensuciaba la marca y obligaba a parchear la lectura. Descartada.
+- **Páginas**: portada,  (sus 21 servicios agrupados en 4),  y una por ciudad, , . Sus URLs de siempre redirigen (301,  de ).
+- **Contenido**: todo de su web, con  → ; ordenado en . Su web tiene relleno publicado que se filtra: «Lorem ipsum», «(Location)», «(Company Name)» y preguntas de plantilla («What is an FAQ?») en sus páginas de ciudad. **Contárselo en la propuesta**: es un argumento más.
+- El formulario de fotos es de demo (no envía).
 
 ## Las piezas del logo
 - Está hecho sobre negro. Piezas sacadas del JPG original con el negro hecho transparente (`public/logo/`: `simbolo`, `overland`, `restoration`, `lema`, `logo-transparente`). Se combinan, no se redibujan: en la cabecera de ordenador símbolo + OVERLAND + RESTORATION en horizontal; en el móvil, símbolo + OVERLAND; entero y grande, solo en el pie. Para la versión final, pedirle el archivo vectorial.
@@ -31,7 +30,7 @@ Web actual: https://www.overlandrestoration247.com/ (revisada el 2026-10-10)
 4. Texto de relleno SEO, casi igual en los 21 servicios.
 5. Errores que restan credibilidad: errata del titular, enlace de Estero a Naples, dirección distinta en los datos para Google, 5 tipografías.
 
-## Dirección propuesta (pendiente de validar con el prototipo)
+## Dirección propuesta al principio (histórico)
 - El estilo, en `DESIGN.md`. La urgencia en el botón de llamar (barra fija en el móvil: Call 24/7 + Send photos).
 - Idea abierta para el hero: en vez de moho generado, sus propias fotos (el moho detrás del pladur) que se limpian con el scroll hasta la habitación terminada, en el hero 50/50 de `DESIGN.md`. Se decide con el prototipo.
 - **Efecto de firma** (idea del usuario): el hero es una pared dañada con todo lo que ellos limpian, en capas: cercos de agua y humedad, moho saliendo de un enchufe (como su foto de la galería) y hollín arriba. Con el scroll se seca y se limpia capa a capa hasta quedar impecable: el scroll es la restauración. Shader WebGL ligero, sin librerías; texto y botón limpios encima desde el principio; acaba en pantalla y media; con reduced-motion o sin WebGL, la pared limpia. Realista y sobrio, no de terror.
