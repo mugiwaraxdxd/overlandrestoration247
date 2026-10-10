@@ -128,12 +128,18 @@ button { font: inherit; }
 
 :focus-visible { outline: 2px solid var(--carbon); outline-offset: 3px; }
 
-/* Texto sobre la pared de la página: invierte su color con lo que tiene detrás (oscuro sobre la
-   pared limpia, claro sobre el moho o a oscuras), así el moho pasa por detrás de todo.
-   Ojo: no funciona dentro de algo que cree su propio contexto (sticky, z-index, opacity, transform) */
-.sobre-pared { color: #fff; mix-blend-mode: difference; }
-.sobre-pared-2 { color: #dedede; mix-blend-mode: difference; }   /* texto secundario */
-.sobre-pared-3 { color: #b4b4b4; mix-blend-mode: difference; }   /* etiquetas */
+/* Texto sobre la pared de la página: oscuro y con un halo del color de la pared (como los nombres
+   de un mapa), así se lee sobre el moho sin tapárselo. La pared, además, aclara el moho debajo
+   de estos textos (ParedPagina los busca por su clase) */
+:root { --halo: #ecebe6; }
+.sobre-pared, .sobre-pared-2, .sobre-pared-3 {
+  text-shadow:
+    0 0 1px var(--halo), 0 0 2px var(--halo), 0 0 4px var(--halo),
+    0 0 9px var(--halo), 0 0 18px rgba(236, 235, 230, .75);
+}
+.sobre-pared { color: var(--carbon); }
+.sobre-pared-2 { color: #2e2e2e; }   /* texto secundario: más oscuro que el normal, aquí hace falta */
+.sobre-pared-3 { color: var(--hierro); }   /* etiquetas */
 
 /* v-aparecer */
 .aparece {

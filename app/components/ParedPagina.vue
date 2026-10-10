@@ -20,7 +20,8 @@ const luz = { x: 0, y: 0, destinoX: 0, destinoY: 0, ultimoGesto: -1e9, colocada:
 let bucle = 0
 
 function buscarBloques() {
-  bloques = [...document.querySelectorAll('[data-limpio]')]
+  // El texto sobre la pared: el moho se aclara debajo (ver .sobre-pared en main.css)
+  bloques = [...document.querySelectorAll('[data-limpio], .sobre-pared, .sobre-pared-2, .mezcla')]
   seccionOscura = document.querySelector('[data-oscuro]')
 }
 

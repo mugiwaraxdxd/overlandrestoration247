@@ -154,10 +154,14 @@ h2 {
   border-top: 1px solid var(--hierro);
 }
 /* El paso activo, a todo color; los demás, atenuados con el color (la opacidad aislaría la mezcla) */
-.mezcla { mix-blend-mode: difference; color: #6e6e6e; transition: color .4s var(--curva); }
-.paso.pasado .mezcla { color: #a8a8a8; }
-.paso.activo h3, .paso.activo p { color: #fff; }
-.paso.activo .numero { color: #a8a8a8; }
+.mezcla {
+  color: #8a8a8a;
+  transition: color .4s var(--curva);
+  text-shadow: 0 0 1px var(--halo), 0 0 2px var(--halo), 0 0 4px var(--halo), 0 0 9px var(--halo), 0 0 18px rgba(236, 235, 230, .75);
+}
+.paso.pasado .mezcla { color: var(--hierro); }
+.paso.activo h3, .paso.activo p { color: var(--carbon); }
+.paso.activo .numero { color: var(--hierro); }
 h3 {
   font-weight: 500;
   font-size: clamp(28px, 3.4vw, 48px);

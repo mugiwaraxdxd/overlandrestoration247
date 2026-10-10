@@ -7,7 +7,7 @@
 import { GLSL_COMUN, GLSL_MOHO } from './glslComun'
 import { VERTICES } from './paredDanada'
 
-export const MAX_ZONAS_LIMPIAS = 12
+export const MAX_ZONAS_LIMPIAS = 24
 
 const FRAGMENTOS = `
 ${GLSL_COMUN}
@@ -60,15 +60,16 @@ float densidad(vec2 pos) {
 
 ${GLSL_MOHO}
 
-// 1 lejos de los bloques de texto, 0 dentro (con un margen suave)
+// 1 lejos del texto, 0 encima: el borde, irregular y muy suave (como una pasada de bayeta, no un recorte)
 float sinTexto(vec2 v) {
   float m = 1.0;
+  float roto = (noise(v / 38.0 + 7.0) - 0.5) * 46.0 + (noise(v / 11.0) - 0.5) * 14.0;
   for (int i = 0; i < ${MAX_ZONAS_LIMPIAS}; i++) {
     if (float(i) >= uNZonas) break;
     vec4 r = uZonas[i];
     vec2 d = max(vec2(r.x - v.x, r.y - v.y), vec2(v.x - r.z, v.y - r.w));
     float fuera = length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
-    m = min(m, smoothstep(-6.0, 36.0, fuera));
+    m = min(m, smoothstep(-24.0, 64.0, fuera + roto));
   }
   return m;
 }
@@ -95,7 +96,7 @@ void main() {
   float Dp = densidad(q);
   bool seVe = oscuro < 0.97 || luz + aro > 0.004;
   if (Dp > -0.45 && seVe) {
-    col = pintarMoho(col, q, Dp, libre, 1.0);
+    col = pintarMoho(col, q, Dp, mix(0.32, 1.0, libre), 1.0);   // bajo el texto, más tenue, no fuera
   }
 
   if (oscuro > 0.0) {
