@@ -45,14 +45,14 @@ onBeforeUnmount(() => window.removeEventListener('scroll', alMoverse))
 <template>
   <section id="como-trabajamos" ref="seccion" class="como">
     <div class="lateral">
+      <!-- El titular fuera del bloque fijo: un sticky aísla la mezcla del texto con la pared -->
+      <div class="cabeza">
+        <p class="etiqueta-mono sobre-pared-3">How we work</p>
+        <h2 class="sobre-pared">From the call<br>to dry.</h2>
+      </div>
       <div class="fijo">
-        <div class="cabeza" data-limpio>
-          <p class="etiqueta-mono">How we work</p>
-          <h2>From the call<br>to dry.</h2>
-        </div>
-
         <!-- El medidor: un dato real de su trabajo, que baja paso a paso -->
-        <div class="medidor" :class="{ seco }" data-limpio>
+        <div class="medidor" :class="{ seco }">
           <div class="fila">
             <span class="etiqueta-mono">Moisture reading</span>
             <span class="estado etiqueta-mono">{{ seco ? 'Dry' : 'Wet' }}</span>
@@ -74,10 +74,10 @@ onBeforeUnmount(() => window.removeEventListener('scroll', alMoverse))
     </div>
 
     <ol class="pasos">
-      <li v-for="(paso, i) in PASOS" :key="paso.titulo" class="paso" :class="{ activo: i === actual, pasado: i < actual }" data-limpio>
-        <span class="numero etiqueta-mono">{{ String(i + 1).padStart(2, '0') }}</span>
-        <h3>{{ paso.titulo }}</h3>
-        <p>{{ paso.texto }}</p>
+      <li v-for="(paso, i) in PASOS" :key="paso.titulo" class="paso" :class="{ activo: i === actual, pasado: i < actual }">
+        <span class="numero etiqueta-mono mezcla">{{ String(i + 1).padStart(2, '0') }}</span>
+        <h3 class="mezcla">{{ paso.titulo }}</h3>
+        <p class="mezcla">{{ paso.texto }}</p>
         <span class="equipo etiqueta-mono">{{ paso.equipo }}</span>
       </li>
     </ol>
@@ -92,15 +92,13 @@ onBeforeUnmount(() => window.removeEventListener('scroll', alMoverse))
   padding: 96px var(--margen) 120px;
 }
 
+.lateral { display: grid; gap: 20px; align-content: start; }
 .fijo {
   position: sticky;
   top: calc(var(--alto-cabecera) + 12px);
-  display: grid;
-  gap: 16px;
   z-index: 2;
 }
 .cabeza { display: grid; gap: 12px; }
-.cabeza .etiqueta-mono { color: var(--ceniza); }
 h2 {
   font-weight: 500;
   font-size: clamp(34px, 5vw, 72px);
@@ -154,19 +152,19 @@ h2 {
   min-height: 62svh;
   padding: 32px 0;
   border-top: 1px solid var(--hierro);
-  opacity: .32;
-  transition: opacity .4s var(--curva);
 }
-.paso.activo, .paso.pasado { opacity: 1; }
-.paso.pasado { opacity: .55; }
-.numero { color: var(--ceniza); }
+/* El paso activo, a todo color; los demás, atenuados con el color (la opacidad aislaría la mezcla) */
+.mezcla { mix-blend-mode: difference; color: #6e6e6e; transition: color .4s var(--curva); }
+.paso.pasado .mezcla { color: #a8a8a8; }
+.paso.activo h3, .paso.activo p { color: #fff; }
+.paso.activo .numero { color: #a8a8a8; }
 h3 {
   font-weight: 500;
   font-size: clamp(28px, 3.4vw, 48px);
   line-height: 1;
   text-transform: uppercase;
 }
-.paso p { color: var(--hierro); max-width: 46ch; font-size: 18px; }
+.paso p { max-width: 46ch; font-size: 18px; }
 .equipo {
   justify-self: start;
   padding: 5px 10px;
@@ -181,11 +179,9 @@ h3 {
   .lectura { font-size: 48px; grid-row: span 2; }
   .barras { height: 36px; }
   .pie-medidor { display: none; }
-  .cabeza { display: none; }
   .paso { min-height: 48svh; }
 }
 @media (min-width: 900px) {
   .como { grid-template-columns: minmax(320px, 1fr) 1.25fr; gap: clamp(32px, 6vw, 120px); }
-  .cabeza-movil { display: none; }
 }
 </style>

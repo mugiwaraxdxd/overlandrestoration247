@@ -1,5 +1,6 @@
 <script setup>
-// «What happened?»: el cliente piensa en su problema, no en un catálogo de 18 servicios
+// «What happened?»: el cliente piensa en su problema, no en un catálogo de 18 servicios.
+// Las celdas son transparentes: la pared (y su moho) se ve a través y el texto invierte su color
 const PROBLEMAS = [
   { n: '01', titulo: 'Water', linea: 'Leaks, burst pipes, floods. Extraction and structural drying, started within hours.', pasos: ['Extraction', 'Moisture mapping', 'Drying'] },
   { n: '02', titulo: 'Mold', linea: 'Testing, containment and removal by a Florida licensed mold remediator.', pasos: ['Containment', 'HEPA', 'Clearance test'] },
@@ -10,19 +11,19 @@ const PROBLEMAS = [
 
 <template>
   <section id="servicios" class="problemas">
-    <div class="cabeza" data-limpio>
-      <p v-aparecer class="aparece etiqueta-mono">What happened?</p>
-      <h2 v-aparecer="80" class="aparece">Tell us what you're looking at. We take it from there.</h2>
+    <div class="cabeza">
+      <p v-aparecer class="aparece etiqueta-mono sobre-pared-3">What happened?</p>
+      <h2 v-aparecer="80" class="aparece sobre-pared">Tell us what you're looking at. We take it from there.</h2>
     </div>
     <div class="rejilla">
-      <a v-for="(pr, i) in PROBLEMAS" :key="pr.n" v-aparecer="i * 90" class="aparece celda" href="#">
-        <span class="etiqueta-mono numero">{{ pr.n }}</span>
-        <h3>{{ pr.titulo }}</h3>
-        <p>{{ pr.linea }}</p>
-        <ul>
+      <a v-for="(pr, i) in PROBLEMAS" :key="pr.n" class="celda" href="#">
+        <span v-aparecer="i * 90" class="aparece etiqueta-mono sobre-pared-3">{{ pr.n }}</span>
+        <h3 v-aparecer="i * 90 + 40" class="aparece sobre-pared">{{ pr.titulo }}</h3>
+        <p v-aparecer="i * 90 + 80" class="aparece sobre-pared-2">{{ pr.linea }}</p>
+        <ul v-aparecer="i * 90 + 120" class="aparece sobre-pared">
           <li v-for="paso in pr.pasos" :key="paso" class="etiqueta-mono">{{ paso }}</li>
         </ul>
-        <span class="ver etiqueta-mono">See how we handle it <span aria-hidden="true">→</span></span>
+        <span class="ver etiqueta-mono sobre-pared">See how we handle it <span aria-hidden="true">→</span></span>
       </a>
     </div>
   </section>
@@ -34,7 +35,6 @@ const PROBLEMAS = [
   padding: 96px var(--margen) 120px;
 }
 .cabeza { display: grid; gap: 14px; margin-bottom: 40px; max-width: 900px; }
-.cabeza .etiqueta-mono { color: var(--ceniza); }
 h2 {
   font-weight: 500;
   font-size: clamp(30px, 4.6vw, 56px);
@@ -43,25 +43,20 @@ h2 {
   text-transform: uppercase;
 }
 
-/* La rejilla del informe: líneas de 1px compartidas, sin sombras ni radios */
+/* La rejilla del informe: solo sus líneas; la pared se ve a través */
 .rejilla {
   display: grid;
   grid-template-columns: 1fr;
-  border-top: 1px solid var(--hormigon);
-  border-left: 1px solid var(--hormigon);
+  border-top: 1px solid var(--hierro);
 }
 .celda {
   position: relative;
   display: grid;
   align-content: start;
   gap: 12px;
-  padding: 24px 22px 28px;
-  border-right: 1px solid var(--hormigon);
-  border-bottom: 1px solid var(--hormigon);
+  padding: 26px 4px 30px;
+  border-bottom: 1px solid var(--hierro);
   text-decoration: none;
-  color: var(--carbon);
-  background: var(--papel);
-  transition: background-color .25s var(--curva);
 }
 .celda::after {
   content: '';
@@ -75,31 +70,31 @@ h2 {
   transform-origin: left;
   transition: transform .35s var(--curva);
 }
-.celda:hover { background: var(--niebla); }
 .celda:hover::after { transform: scaleX(1); }
-.numero { color: var(--ceniza); }
 h3 {
   font-weight: 500;
-  font-size: 30px;
+  font-size: 32px;
   line-height: 1;
   text-transform: uppercase;
 }
-.celda p { color: var(--hierro); font-size: 16px; max-width: 34ch; }
+.celda p { font-size: 16px; max-width: 34ch; }
 ul { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; list-style: none; }
 li {
   padding: 4px 10px;
   border-radius: var(--radio-pildora);
-  box-shadow: inset 0 0 0 1px var(--carbon);
+  box-shadow: inset 0 0 0 1px currentColor;
   font-size: 11px;
 }
 .ver { margin-top: 6px; font-size: 12px; }
 .ver span { display: inline-block; transition: transform .25s var(--curva); }
 .celda:hover .ver span { transform: translateX(4px); }
 
-@media (min-width: 700px) { .rejilla { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 700px) {
+  .rejilla { grid-template-columns: repeat(2, 1fr); column-gap: 32px; }
+}
 @media (min-width: 1200px) {
   .rejilla { grid-template-columns: repeat(4, 1fr); }
-  .celda { padding: 28px 26px 32px; min-height: 340px; }
+  .celda { min-height: 320px; }
   .ver { margin-top: auto; }
 }
 </style>

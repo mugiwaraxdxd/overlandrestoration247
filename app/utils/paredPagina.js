@@ -42,7 +42,7 @@ float densidad(vec2 pos) {
   float x = pos.x * UNIDAD;
   float yPagina = pos.y * UNIDAD;
   float borde = min(x, gAncho - x);
-  float D = exp(-borde / (gAncho * 0.22));                                     // entra desde los bordes
+  float D = exp(-borde / max(gAncho * 0.22, 170.0));                          // entra desde los bordes (en el móvil, más hacia dentro)
   float tramos = noise(vec2(pos.x * 0.7, pos.y * 1.5) + 3.0) * 0.6 + noise(pos * 4.0 + 9.0) * 0.4;
   D *= 1.9 * smoothstep(0.3, 0.68, tramos);                                    // a trozos, no una franja
   D += 1.0 * smoothstep(0.66, 0.9, noise(pos * 1.4 + 21.0));                     // manchas sueltas en medio

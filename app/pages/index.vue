@@ -6,7 +6,12 @@
     <main>
       <HeroLimpieza />
       <Problemas />
+      <ComoTrabajamos />
       <Noche />
+      <Seguro />
+      <PorQue />
+      <Zonas />
+      <Preguntas />
       <Final />
     </main>
     <Pie />

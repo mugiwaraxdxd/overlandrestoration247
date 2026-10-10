@@ -128,6 +128,13 @@ button { font: inherit; }
 
 :focus-visible { outline: 2px solid var(--carbon); outline-offset: 3px; }
 
+/* Texto sobre la pared de la página: invierte su color con lo que tiene detrás (oscuro sobre la
+   pared limpia, claro sobre el moho o a oscuras), así el moho pasa por detrás de todo.
+   Ojo: no funciona dentro de algo que cree su propio contexto (sticky, z-index, opacity, transform) */
+.sobre-pared { color: #fff; mix-blend-mode: difference; }
+.sobre-pared-2 { color: #dedede; mix-blend-mode: difference; }   /* texto secundario */
+.sobre-pared-3 { color: #b4b4b4; mix-blend-mode: difference; }   /* etiquetas */
+
 /* v-aparecer */
 .aparece {
   opacity: 0;
