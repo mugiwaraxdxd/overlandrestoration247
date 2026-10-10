@@ -1,5 +1,8 @@
 <script setup>
 import { SITIO } from '~/utils/sitio'
+import { useLimpieza } from '~/composables/useLimpieza'
+
+const { progresoPagina } = useLimpieza()
 </script>
 
 <template>
@@ -27,6 +30,9 @@ import { SITIO } from '~/utils/sitio'
     <a class="llamar-icono" :href="SITIO.telefonoEnlace" aria-label="Call 24/7">
       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" /></svg>
     </a>
+
+    <!-- Lo que se ha limpiado camino del botón final -->
+    <span class="progreso" :class="{ hecho: progresoPagina >= 1 }" :style="{ transform: `scaleX(${progresoPagina})`, opacity: progresoPagina > 0 ? 1 : 0 }" aria-hidden="true" />
   </header>
 </template>
 
@@ -86,6 +92,18 @@ import { SITIO } from '~/utils/sitio'
   box-shadow: var(--sombra-accion);
 }
 .llamar-icono:active { transform: scale(.95); }
+
+.progreso {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  background: var(--obra);
+  transform-origin: left;
+  transition: opacity .3s var(--curva), background-color .4s var(--curva);
+}
+.progreso.hecho { background: var(--seco); }
 
 @media (min-width: 900px) {
   .placa { height: 56px; padding: 0 16px 0 10px; gap: 10px; }

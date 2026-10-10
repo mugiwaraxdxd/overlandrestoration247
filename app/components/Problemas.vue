@@ -10,7 +10,7 @@ const PROBLEMAS = [
 
 <template>
   <section id="servicios" class="problemas">
-    <div class="cabeza">
+    <div class="cabeza" data-limpio>
       <p v-aparecer class="aparece etiqueta-mono">What happened?</p>
       <h2 v-aparecer="80" class="aparece">Tell us what you're looking at. We take it from there.</h2>
     </div>
@@ -32,9 +32,7 @@ const PROBLEMAS = [
 .problemas {
   position: relative;
   z-index: 1;
-  background: var(--papel);
-  padding: 80px var(--margen) 96px;
-  border-top: 1px solid var(--hormigon);
+  padding: 96px var(--margen) 120px;
 }
 .cabeza { display: grid; gap: 14px; margin-bottom: 40px; max-width: 900px; }
 .cabeza .etiqueta-mono { color: var(--ceniza); }

@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section ref="seccion" class="hero" :class="{ 'sin-webgl': sinWebgl }">
+  <section id="hero" ref="seccion" class="hero" :class="{ 'sin-webgl': sinWebgl }">
     <div ref="fijo" class="fijo">
       <div class="texto">
         <p class="etiqueta-mono antetitulo">24/7 emergency restoration · Cape Coral, FL</p>
@@ -185,6 +185,7 @@ onBeforeUnmount(() => {
 .hero {
   position: relative;
   height: 230svh;
+  background: var(--papel);   /* tapa la pared de la página: el hero tiene la suya */
 }
 .fijo {
   position: sticky;
