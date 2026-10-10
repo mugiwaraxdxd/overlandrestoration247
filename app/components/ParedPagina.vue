@@ -19,11 +19,6 @@ let reducido = false
 const luz = { x: 0, y: 0, destinoX: 0, destinoY: 0, ultimoGesto: -1e9, colocada: false }
 let bucle = 0
 
-const suave = (a, b, x) => {
-  const t = Math.min(1, Math.max(0, (x - a) / (b - a)))
-  return t * t * (3 - 2 * t)
-}
-
 function buscarBloques() {
   bloques = [...document.querySelectorAll('[data-limpio]')]
   seccionOscura = document.querySelector('[data-oscuro]')
@@ -79,9 +74,8 @@ function pintar(t = performance.now()) {
   }
   const oscuro = rectOscuro(vista)
   const linterna = oscuro ? moverLuz(oscuro, t) : null
-  // Las luces se apagan cuando la noche ocupa la pantalla (y se encienden al salir)
-  const tapa = oscuro ? (Math.min(oscuro.y1, vista) - Math.max(oscuro.y0, 0)) / vista : 0
-  const noche = suave(0.4, 0.85, tapa)
+  // La franja de la noche está siempre a oscuras (con movimiento reducido, también)
+  const noche = oscuro ? 1 : 0
   pared.dibujar({ scroll, inicio, p, rects, oscuro, luz: linterna, noche })
 
   // Con la noche a la vista, la linterna se mueve sola: se repinta cada fotograma

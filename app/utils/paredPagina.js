@@ -33,8 +33,8 @@ float gPMoho;
 // 1 dentro de la sección de noche (con el borde suave), 0 fuera
 float aOscuras(vec2 v) {
   if (uHayOscuro <= 0.0) return 0.0;
-  // a todo el ancho: solo se difumina arriba y abajo
-  return smoothstep(uOscuro.y, uOscuro.y + 90.0, v.y) * (1.0 - smoothstep(uOscuro.w - 90.0, uOscuro.w, v.y));
+  // a todo el ancho; arriba y abajo, un borde corto y suave
+  return smoothstep(uOscuro.y, uOscuro.y + 36.0, v.y) * (1.0 - smoothstep(uOscuro.w - 36.0, uOscuro.w, v.y));
 }
 
 // Cuánto moho hay en un punto (en unidades de página), ya restada la limpieza
@@ -46,7 +46,7 @@ float densidad(vec2 pos) {
   float tramos = noise(vec2(pos.x * 0.7, pos.y * 1.5) + 3.0) * 0.6 + noise(pos * 4.0 + 9.0) * 0.4;
   D *= 1.9 * smoothstep(0.3, 0.68, tramos);                                    // a trozos, no una franja
   D += 1.0 * smoothstep(0.66, 0.9, noise(pos * 1.4 + 21.0));                     // manchas sueltas en medio
-  float noche = aOscuras(vec2(x, yPagina - uScroll));
+  float noche = smoothstep(0.9, 1.0, aOscuras(vec2(x, yPagina - uScroll))) * uNoche;   // solo donde está del todo oscuro
   D += 1.5 * noche * (0.45 + 0.55 * smoothstep(0.3, 0.7, noise(pos * 2.2 + 41.0)));   // a oscuras está todo lo que no se ve de día
   float islas = noise(pos * 3.2 + 3.0) * 0.6 + noise(pos * 8.0 + 9.0) * 0.4;
   D *= 0.3 + 1.3 * smoothstep(0.25, 0.78, islas);
@@ -86,7 +86,7 @@ void main() {
   // A oscuras: la pared casi negra y, donde apunta la linterna, la pared de verdad con luz cálida.
   // La luz pasa por detrás del texto: el texto de la noche invierte su color (mix-blend-mode)
   float libre = sinTexto(v);
-  float oscuro = uNoche;                                              // se apaga toda la pantalla: sin bordes
+  float oscuro = aOscuras(v) * uNoche;                                // la franja de la noche, siempre a oscuras
   float dist = length(v - uLuz);
   float luz = 1.0 - smoothstep(uRadio * 0.15, uRadio, dist);           // la luz pasa también por detrás del texto
   float aro = exp(-pow((dist - uRadio * 0.82) / (uRadio * 0.08), 2.0)) * 0.12;
