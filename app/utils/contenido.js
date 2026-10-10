@@ -40,7 +40,22 @@ export const SERVICIOS = [
     sub: ['Mold inspection & testing', 'Containment & air filtration', 'Professional mold removal', 'Sanitization & disinfection', 'Post-remediation clearance testing'],
     antiguas: ['/mold-remediation-and-removal', '/mold-inspection-and-testing', '/containment-and-air-filtration', '/professional-mold-removal', '/sanitization-and-disinfection-treatments', '/post-remediation-verification-and-clearance-testing']
   }
-].map(s => ({ ...s, web: web.servicios[s.slug] }))
+].map(s => ({
+  ...s,
+  web: web.servicios[s.slug],
+  // Su catálogo: cada página de servicio de su web que cae en este grupo (con su texto)
+  catalogo: s.antiguas
+    .filter(r => web.subservicios[r]?.intro?.length)
+    .map(r => ({ ruta: r, ancla: anclaDe(r), ...web.subservicios[r] }))
+}))
+
+// El ancla de un servicio de su web dentro de la página de su grupo («/emergency-24/7-…» → «emergency-24-7-…»)
+export function anclaDe(ruta) {
+  return ruta.replace(/^\//, '').replace(/\//g, '-')
+}
+
+// Cuántos servicios suyos hay en total (los de su web)
+export const TOTAL_SERVICIOS = SERVICIOS.reduce((n, s) => n + s.catalogo.length, 0)
 
 export const servicioDe = (slug) => SERVICIOS.find(s => s.slug === slug)
 

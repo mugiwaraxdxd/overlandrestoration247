@@ -30,6 +30,8 @@ function bloques(lineas) {
 }
 
 const limpio = (t) => t.replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim()
+// En su web el nombre de la empresa iba aparte (un enlace) y el rastreo lo perdió: «has been providing…»
+const conNombre = (t) => (/^[a-z]/.test(t) ? `Overland Restoration 24/7 ${t}` : t)
 const titulo = (l) => limpio(l.replace(/^#+\s*/, ''))
 
 // Una página de servicio: intro, «Our … Services», «Benefits …» y las preguntas
@@ -60,7 +62,7 @@ function servicio(ruta) {
     }
     if (/^(Contact Us|Learn More|View More|Button)/.test(l)) continue
     const texto = limpio(l)
-    if (zona === 'intro') res.intro.push(texto)
+    if (zona === 'intro') res.intro.push(conNombre(texto))
     else if ((zona === 'servicios' || zona === 'beneficios') && res[zona].length) res[zona][res[zona].length - 1].texto += texto
     else if (zona === 'preguntas' && res.preguntas.length) res.preguntas[res.preguntas.length - 1].r += texto
     else if (zona === 'cierre') res.cierre.push(texto)
@@ -77,6 +79,16 @@ const HUBS = {
 }
 const servicios = {}
 for (const [slug, ruta] of Object.entries(HUBS)) servicios[slug] = servicio(ruta)
+
+// Cada uno de sus 21 servicios, de su propia página: título, resumen (la intro) y lo que incluye
+const subservicios = {}
+for (const ruta of Object.keys(secciones)) {
+  if (ruta.startsWith('/service-area/') || ['/', '/faqs', '/gallery', '/areas-we-serve', '/contact-us', '/reviews'].includes(ruta)) continue
+  const s = servicio(ruta)
+  const t = (secciones[ruta] || []).find(l => l.startsWith('- Título'))
+  const titulo = t ? limpio(t.replace('- Título (title):', '')).replace(/\s*\|.*$/, '') : ruta
+  subservicios[ruta] = { titulo, intro: s.intro, puntos: s.servicios.map(x => ({ titulo: x.titulo, texto: x.texto })) }
+}
 
 // Las preguntas generales (su página /faqs)
 const faqs = []
@@ -126,7 +138,7 @@ for (const ruta of Object.keys(secciones).filter(r => r.startsWith('/service-are
   if (slug) zonas[slug] = z
 }
 
-fs.writeFileSync('app/utils/contenidoWeb.json', JSON.stringify({ servicios, faqs, zonas }, null, 2))
+fs.writeFileSync('app/utils/contenidoWeb.json', JSON.stringify({ servicios, subservicios, faqs, zonas }, null, 2))
 for (const [k, z] of Object.entries(zonas)) console.log('zona', k, '· intro', z.intro.length, '· clima', z.clima.length, '· retos', z.retos.length, '· preguntas', z.preguntas.length)
 for (const [k, s] of Object.entries(servicios)) {
   console.log(k, '· intro', s.intro.length, '· servicios', s.servicios.length, '· beneficios', s.beneficios.length, '· preguntas', s.preguntas.length)

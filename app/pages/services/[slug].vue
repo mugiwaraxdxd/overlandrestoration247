@@ -15,12 +15,6 @@ function resumen(t = '') {
   return r.trim()
 }
 
-// Las descripciones de los subservicios, en dos frases: las tarjetas no son muros de texto
-function corto(t = '') {
-  const frases = t.match(/[^.!?]+[.!?]+/g) || [t]
-  return frases.slice(0, 2).join('').trim()
-}
-
 useHead(() => ({
   title: `${s.value.titulo} in Cape Coral, FL`,
   meta: [{ name: 'description', content: s.value.web.meta }]
@@ -55,16 +49,10 @@ useHead(() => ({
     <section class="seccion">
       <div class="envoltura">
         <div class="cabeza-seccion">
-          <p v-aparecer class="aparece antetitulo">What we do</p>
-          <h2 v-aparecer="80" class="aparece titulo-2">Our {{ s.titulo.toLowerCase() }} services</h2>
+          <p v-aparecer class="aparece antetitulo">{{ s.catalogo.length }} services</p>
+          <h2 v-aparecer="80" class="aparece titulo-2">All our {{ s.nombre.toLowerCase() }} services</h2>
         </div>
-        <div class="rejilla-3">
-          <div v-for="(x, i) in s.web.servicios" :key="x.titulo" v-aparecer="(i % 3) * 80" class="aparece tarjeta item">
-            <span class="numero">{{ String(i + 1).padStart(2, '0') }}</span>
-            <h3>{{ x.titulo }}</h3>
-            <p>{{ corto(x.texto) }}</p>
-          </div>
-        </div>
+        <CatalogoServicio :servicio="s" />
       </div>
     </section>
 

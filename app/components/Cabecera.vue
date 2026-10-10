@@ -1,6 +1,6 @@
 <script setup>
 import { SITIO } from '~/utils/sitio'
-import { SERVICIOS } from '~/utils/contenido'
+import { SERVICIOS, TOTAL_SERVICIOS } from '~/utils/contenido'
 
 // La cabecera: el logo en su placa negra (está hecho sobre negro), el menú y llamar.
 // En el ordenador, Services despliega los cuatro servicios; en el móvil, un menú a pantalla completa.
@@ -28,14 +28,16 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
           <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </button>
         <Transition name="menu">
+          <!-- El menú grande: todos sus servicios en sus cuatro grupos -->
           <div v-show="servicios" class="panel">
-            <NuxtLink v-for="s in SERVICIOS" :key="s.slug" :to="`/services/${s.slug}`" class="opcion">
-              <span class="icono-circulo"><Icono :nombre="s.icono" /></span>
-              <span>
+            <div v-for="s in SERVICIOS" :key="s.slug" class="columna">
+              <NuxtLink :to="`/services/${s.slug}`" class="grupo-menu">
+                <span class="icono-circulo"><Icono :nombre="s.icono" /></span>
                 <b>{{ s.titulo }}</b>
-                <small>{{ s.corto }}</small>
-              </span>
-            </NuxtLink>
+              </NuxtLink>
+              <NuxtLink v-for="x in s.catalogo" :key="x.ancla" :to="`/services/${s.slug}#${x.ancla}`" class="sub">{{ x.titulo }}</NuxtLink>
+            </div>
+            <p class="pie-menu"><span class="disponible" aria-hidden="true" />{{ TOTAL_SERVICIOS }} services · on call 24/7 across Southwest Florida</p>
           </div>
         </Transition>
       </div>
@@ -59,9 +61,14 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
   <Transition name="cortina">
     <nav v-show="abierto" class="cortina" aria-label="Mobile">
       <p class="grupo">Services</p>
-      <NuxtLink v-for="s in SERVICIOS" :key="s.slug" :to="`/services/${s.slug}`" class="fila">
-        <span class="icono-circulo"><Icono :nombre="s.icono" /></span>{{ s.titulo }}
-      </NuxtLink>
+      <details v-for="s in SERVICIOS" :key="s.slug" class="grupo-movil">
+        <summary class="fila">
+          <span class="icono-circulo"><Icono :nombre="s.icono" /></span>{{ s.titulo }}
+          <span class="cuantos">{{ s.catalogo.length }}</span>
+        </summary>
+        <NuxtLink :to="`/services/${s.slug}`" class="sub-movil todo">All {{ s.nombre.toLowerCase() }} services →</NuxtLink>
+        <NuxtLink v-for="x in s.catalogo" :key="x.ancla" :to="`/services/${s.slug}#${x.ancla}`" class="sub-movil">{{ x.titulo }}</NuxtLink>
+      </details>
       <p class="grupo">More</p>
       <NuxtLink to="/areas" class="fila sencilla">Areas we serve</NuxtLink>
       <NuxtLink to="/faq" class="fila sencilla">FAQ</NuxtLink>
@@ -124,33 +131,59 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
 .enlace:hover, .enlace.router-link-active { background: var(--bruma); color: var(--tinta); }
 
 .desplegable { position: relative; }
+/* El menú grande, centrado bajo la cabecera */
 .panel {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: -12px;
-  width: 420px;
+  position: fixed;
+  top: calc(var(--alto-cabecera) - 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1120px, calc(100vw - 48px));
   display: grid;
-  gap: 4px;
-  padding: 10px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px 20px;
+  padding: 22px;
   background: var(--blanco);
   border-radius: var(--radio);
   box-shadow: var(--sombra-alta);
 }
-.panel::before { content: ''; position: absolute; left: 0; right: 0; top: -12px; height: 12px; }
-.opcion {
+.panel::before { content: ''; position: absolute; left: 0; right: 0; top: -30px; height: 30px; }
+.columna { display: grid; align-content: start; gap: 2px; }
+.grupo-menu {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 10px;
+  gap: 10px;
+  padding: 8px;
+  margin-bottom: 4px;
   border-radius: 14px;
   text-decoration: none;
   transition: background-color .2s var(--curva);
 }
-.opcion:hover { background: var(--bruma); }
-.opcion .icono-circulo { width: 44px; height: 44px; border-radius: 12px; }
-.opcion .icono-circulo svg { width: 22px; height: 22px; }
-.opcion b { display: block; font-size: 15px; }
-.opcion small { display: block; font-size: 13px; color: var(--tinta-3); line-height: 1.4; }
+.grupo-menu:hover { background: var(--bruma); }
+.grupo-menu .icono-circulo { width: 40px; height: 40px; border-radius: 12px; }
+.grupo-menu .icono-circulo svg { width: 20px; height: 20px; }
+.grupo-menu b { font-size: 15px; line-height: 1.25; }
+.sub {
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--tinta-2);
+  text-decoration: none;
+  transition: background-color .2s var(--curva), color .2s var(--curva);
+}
+.sub:hover { background: var(--azul-suave); color: var(--azul); }
+.pie-menu {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--linea);
+  font-size: 14px;
+  color: var(--tinta-3);
+}
+.pie-menu .disponible { background: var(--verde); }
+.pie-menu .disponible::after { background: var(--verde); }
 
 .cabecera > .llamar { display: none; min-height: 46px; font-size: 15px; }
 
@@ -191,11 +224,17 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
 }
 .fila .icono-circulo { width: 44px; height: 44px; border-radius: 12px; }
 .fila .icono-circulo svg { width: 22px; height: 22px; }
+.grupo-movil summary { list-style: none; cursor: pointer; }
+.grupo-movil summary::-webkit-details-marker { display: none; }
+.cuantos { margin-left: auto; min-width: 28px; height: 24px; display: grid; place-items: center; border-radius: var(--pildora); background: var(--bruma); font-size: 13px; color: var(--tinta-3); }
+.grupo-movil[open] .cuantos { background: var(--azul); color: #fff; }
+.sub-movil { display: block; padding: 9px 6px 9px 64px; font-size: 15px; color: var(--tinta-2); text-decoration: none; }
+.sub-movil.todo { color: var(--azul); font-weight: 700; }
 .fila.sencilla { padding: 12px 6px; border-bottom: 1px solid var(--linea); border-radius: 0; }
 .cortina .llamar { margin-top: 24px; }
 
 .menu-enter-active, .menu-leave-active { transition: opacity .2s var(--curva), transform .2s var(--curva); }
-.menu-enter-from, .menu-leave-to { opacity: 0; transform: translateY(-6px); }
+.menu-enter-from, .menu-leave-to { opacity: 0; transform: translate(-50%, -6px); }
 .cortina-enter-active, .cortina-leave-active { transition: opacity .25s var(--curva), transform .25s var(--curva); }
 .cortina-enter-from, .cortina-leave-to { opacity: 0; transform: translateY(-10px); }
 
