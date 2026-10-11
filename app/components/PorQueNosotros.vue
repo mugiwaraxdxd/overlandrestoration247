@@ -1,5 +1,9 @@
 <script setup>
 import { VALORES } from '~/utils/contenido'
+import { CITAS } from '~/utils/resenas'
+
+// Cada valor, con lo que dice de él un cliente en su reseña
+const CITAS_VALORES = [CITAS.integridad, CITAS.atajos, CITAS.precio, CITAS.dueno]
 </script>
 
 <!-- Por qué ellos: su frase del dueño y sus cuatro valores («Why choose us?» de su web) -->
@@ -10,7 +14,7 @@ import { VALORES } from '~/utils/contenido'
       <p>I work directly with every customer from start to finish, ensuring clear communication and personal accountability.</p>
       <footer>
         <span class="avatar"><Icono nombre="persona" /></span>
-        <span><b>The owner</b><small>Overland Restoration 24/7</small></span>
+        <span><b>Danny</b><small>The owner · Overland Restoration 24/7</small></span>
       </footer>
     </blockquote>
     <div class="valores">
@@ -18,6 +22,7 @@ import { VALORES } from '~/utils/contenido'
         <span class="icono-circulo"><Icono :nombre="v.icono" /></span>
         <h3>{{ v.titulo }}</h3>
         <p>{{ v.texto }}</p>
+        <CitaResena :cita="CITAS_VALORES[i]" class="lo-dicen" />
       </div>
     </div>
   </div>
@@ -44,6 +49,7 @@ import { VALORES } from '~/utils/contenido'
 .valor { display: grid; gap: 10px; align-content: start; }
 h3 { font-size: 19px; font-weight: 800; }
 .valor p { color: var(--tinta-2); font-size: 16px; }
+.lo-dicen { margin-top: 6px; }
 @media (min-width: 700px) { .valores { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 1000px) {
   .porque { grid-template-columns: 1fr 1.2fr; gap: 56px; align-items: center; }

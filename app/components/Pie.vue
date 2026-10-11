@@ -1,6 +1,7 @@
 <script setup>
 import { SITIO } from '~/utils/sitio'
 import { SERVICIOS, ZONAS } from '~/utils/contenido'
+import { TOTAL_RESENAS, NOTA_MEDIA } from '~/utils/resenas'
 </script>
 
 <!-- El pie: el único sitio con el logo entero, sobre oscuro como está hecho -->
@@ -10,6 +11,7 @@ import { SERVICIOS, ZONAS } from '~/utils/contenido'
       <div class="marca">
         <img class="logo" src="/logo/logo-transparente.png" alt="Overland Restoration 24/7 · Water · Fire · Mold" width="1324" height="940" loading="lazy">
         <p>Owner-operated water, fire, storm and mold restoration in Cape Coral and Southwest Florida. On call 24/7.</p>
+        <NuxtLink to="/reviews" class="nota-pie"><span aria-hidden="true">★★★★★</span> {{ NOTA_MEDIA.toFixed(1) }} · {{ TOTAL_RESENAS }} reviews</NuxtLink>
       </div>
       <div>
         <p class="titulo">Services</p>
@@ -57,6 +59,8 @@ ul.dos { grid-template-columns: 1fr 1fr; column-gap: 20px; }
 a { color: #b7c3d4; text-decoration: none; transition: color .2s var(--curva); }
 a:hover { color: #fff; }
 .todas { display: inline-block; margin-top: 12px; color: #fff; font-weight: 600; }
+.nota-pie { color: #fff; font-weight: 600; }
+.nota-pie span { color: #f5b301; letter-spacing: 2px; }
 .tel { display: block; font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 8px; }
 .licencia { margin-top: 12px; font-size: 13px; color: #8a9bb2; }
 .redes { display: flex; gap: 16px; margin-top: 14px; }

@@ -42,6 +42,7 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
         </Transition>
       </div>
       <NuxtLink to="/areas" class="enlace">Areas</NuxtLink>
+      <NuxtLink to="/reviews" class="enlace">Reviews</NuxtLink>
       <NuxtLink to="/faq" class="enlace">FAQ</NuxtLink>
       <NuxtLink to="/contact" class="enlace">Contact</NuxtLink>
     </nav>
@@ -71,6 +72,7 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
       </details>
       <p class="grupo">More</p>
       <NuxtLink to="/areas" class="fila sencilla">Areas we serve</NuxtLink>
+      <NuxtLink to="/reviews" class="fila sencilla">Reviews</NuxtLink>
       <NuxtLink to="/faq" class="fila sencilla">FAQ</NuxtLink>
       <NuxtLink to="/contact" class="fila sencilla">Contact</NuxtLink>
       <a class="llamar" :href="SITIO.telefonoEnlace"><span class="disponible" aria-hidden="true" />Call 24/7 · {{ SITIO.telefono }}</a>

@@ -1,6 +1,7 @@
 <script setup>
 import { SITIO } from '~/utils/sitio'
 import { crearParedNoche } from '~/utils/paredNoche'
+import { CITAS } from '~/utils/resenas'
 
 // Las 2 a.m.: la pared a oscuras y una linterna (el ratón, el dedo o, si nadie la mueve, una luz que
 // se pasea sola) que descubre los cercos de agua y el moho. El texto invierte su color donde le da
@@ -113,6 +114,7 @@ onBeforeUnmount(() => {
         Water keeps moving while you wait, and mold can start in 24 to 48 hours.
         Night, weekend or holiday, you get the owner on the phone, not an answering service.
       </p>
+      <CitaResena v-aparecer="200" class="aparece lo-dicen" :cita="CITAS.llamada" oscura />
       <a v-aparecer="240" class="aparece llamar" :href="SITIO.telefonoEnlace"><Icono nombre="telefono" />Call {{ SITIO.telefono }}</a>
     </div>
     <p v-if="!sinWebgl" class="pista" aria-hidden="true">
@@ -150,8 +152,9 @@ h2 {
 .llamar svg { width: 20px; height: 20px; }
 
 /* El texto invierte su color donde le da la linterna: blanco a oscuras, oscuro sobre la pared iluminada */
-.reloj, h2, .texto, .pista { mix-blend-mode: difference; }
-.sin-webgl .reloj, .sin-webgl h2, .sin-webgl .texto { mix-blend-mode: normal; }
+.reloj, h2, .texto, .pista, .lo-dicen { mix-blend-mode: difference; }
+.sin-webgl .reloj, .sin-webgl h2, .sin-webgl .texto, .sin-webgl .lo-dicen { mix-blend-mode: normal; }
+.lo-dicen { max-width: 46ch; }
 .sin-webgl { background: var(--noche); }
 
 .pista {

@@ -1,5 +1,9 @@
 <script setup>
 import { SEGURO } from '~/utils/contenido'
+import { CITAS } from '~/utils/resenas'
+
+// Cada cosa que documentan, con lo que dice de ella un cliente en su reseña
+const CITAS_SEGURO = [CITAS.fotos, CITAS.prueba, CITAS.seguro]
 </script>
 
 <!-- El seguro: lo que documentan (de su web: «We document the damage, provide detailed reports…») -->
@@ -18,6 +22,7 @@ import { SEGURO } from '~/utils/contenido'
         <span class="icono-circulo"><Icono :nombre="d.icono" /></span>
         <h3>{{ d.titulo }}</h3>
         <p>{{ d.texto }}</p>
+        <CitaResena :cita="CITAS_SEGURO[i]" class="lo-dicen" />
       </div>
     </div>
   </div>
@@ -28,5 +33,6 @@ import { SEGURO } from '~/utils/contenido'
 .item { display: grid; gap: 12px; align-content: start; padding: 26px; }
 h3 { font-size: 19px; font-weight: 800; }
 .item p { color: var(--tinta-2); font-size: 16px; }
+.lo-dicen { margin-top: 6px; }
 @media (min-width: 900px) { .rejilla { grid-template-columns: repeat(3, 1fr); } }
 </style>

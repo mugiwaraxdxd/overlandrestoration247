@@ -1,25 +1,32 @@
 <script setup>
 import { SITIO } from '~/utils/sitio'
+import { TOTAL_RESENAS, NOTA_MEDIA } from '~/utils/resenas'
+
+const NuxtLink = resolveComponent('NuxtLink')
 
 // Lo que da confianza, de un vistazo (datos de su web)
 const DATOS = [
   { icono: 'reloj', titulo: 'Open 24/7', texto: 'Nights, weekends, holidays' },
   { icono: 'persona', titulo: 'Owner-operated', texto: 'You deal with the owner' },
   { icono: 'escudo', titulo: 'Licensed mold remediator', texto: `Florida license ${SITIO.licencia}` },
-  { icono: 'documento', titulo: 'Insurance claims', texto: 'We document everything' }
+  { icono: 'documento', titulo: 'Insurance claims', texto: 'We document everything' },
+  { icono: 'estrella', titulo: `${NOTA_MEDIA.toFixed(1)} rating`, texto: `${TOTAL_RESENAS} reviews on Google & Yelp`, enlace: '/reviews' }
 ]
 </script>
 
 <template>
   <section class="confianza">
     <div class="envoltura rejilla">
-      <div v-for="(d, i) in DATOS" :key="d.titulo" v-aparecer="i * 70" class="aparece dato">
+      <component
+        :is="d.enlace ? NuxtLink : 'div'" v-for="(d, i) in DATOS" :key="d.titulo" v-aparecer="i * 70"
+        :to="d.enlace" class="aparece dato" :class="{ enlace: d.enlace }"
+      >
         <span class="icono-circulo"><Icono :nombre="d.icono" /></span>
         <div>
           <b>{{ d.titulo }}</b>
-          <span>{{ d.texto }}</span>
+          <span>{{ d.texto }}<template v-if="d.enlace"> →</template></span>
         </div>
-      </div>
+      </component>
     </div>
   </section>
 </template>
@@ -32,5 +39,11 @@ const DATOS = [
 .dato .icono-circulo svg { width: 24px; height: 24px; }
 b { display: block; font-size: 16px; line-height: 1.3; }
 .dato span:not(.icono-circulo) { display: block; font-size: 14px; color: var(--tinta-3); line-height: 1.35; }
-@media (min-width: 900px) { .rejilla { grid-template-columns: repeat(4, 1fr); } }
+.enlace { color: inherit; text-decoration: none; grid-column: 1 / -1; }
+.enlace .icono-circulo { background: #fff6dc; color: #d99a00; }
+.enlace:hover b { color: var(--azul); }
+@media (min-width: 900px) {
+  .rejilla { grid-template-columns: repeat(5, auto); justify-content: space-between; }
+  .enlace { grid-column: auto; }
+}
 </style>

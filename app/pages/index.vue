@@ -27,6 +27,9 @@ useHead({ title: '' })
     <!-- Las 2 a.m.: la pared a oscuras y una linterna -->
     <NocheLinterna />
 
+    <!-- Sus reseñas reales: la nota y las cintas que corren con el scroll -->
+    <ResenasPortada />
+
     <section class="seccion">
       <div class="envoltura">
         <div class="cabeza-seccion">
