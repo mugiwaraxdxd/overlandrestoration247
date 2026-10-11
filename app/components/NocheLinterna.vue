@@ -9,7 +9,7 @@ import { CITAS } from '~/utils/resenas'
 const hora = ref('')
 const formato = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', second: '2-digit' })
 const tactil = ref(false)
-const sinWebgl = ref(false)
+const sinPared = ref(false)
 const seccion = ref(null)
 const lienzo = ref(null)
 const lista = ref(false)
@@ -20,6 +20,7 @@ let visible = false
 let reducido = false
 let bucle = 0
 let observador = null
+let cargador = null
 let creando = null
 let desmontado = false
 const luz = { x: 0, y: 0, destinoX: 0, destinoY: 0, ultimoGesto: -1e9, colocada: false }
@@ -65,24 +66,26 @@ onMounted(() => {
   tactil.value = window.matchMedia('(hover: none)').matches
   reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  // La pared se pinta (una vez) cuando faltan cuatro pantallas para llegar, no al cargar la página
-  // (su shader compila en segundo plano: en Chrome de Windows, unos segundos); y la luz solo se
-  // mueve mientras se ve
+  // La pared (una foto) se pide cuando faltan dos pantallas para llegar; la luz solo se mueve
+  // mientras la sección se ve
+  cargador = new IntersectionObserver(([e]) => {
+    if (!e.isIntersecting || creando) return
+    cargador.disconnect()
+    creando = crearParedNoche(lienzo.value).then((p) => {
+      if (desmontado) { p?.destruir(); return }
+      if (!p) { sinPared.value = true; return }
+      pared = p
+      lista.value = true
+      if (visible && !bucle) bucle = requestAnimationFrame(pintar)
+    })
+  }, { rootMargin: '200% 0px' })
+  cargador.observe(seccion.value)
   observador = new IntersectionObserver(([e]) => {
     visible = e.isIntersecting
-    if (visible && !creando) {
-      creando = crearParedNoche(lienzo.value).then((p) => {
-        if (desmontado) { p?.destruir(); return }
-        if (!p) { sinWebgl.value = true; return }
-        pared = p
-        lista.value = true
-        if (visible) bucle = requestAnimationFrame(pintar)
-      })
-    }
     cancelAnimationFrame(bucle)
     bucle = 0
     if (visible && pared) bucle = requestAnimationFrame(pintar)
-  }, { rootMargin: '400% 0px' })
+  })
   observador.observe(seccion.value)
   window.addEventListener('pointermove', alApuntar, { passive: true })
   window.addEventListener('touchmove', alApuntar, { passive: true })
@@ -94,6 +97,7 @@ onBeforeUnmount(() => {
   clearInterval(temporizador)
   cancelAnimationFrame(bucle)
   observador?.disconnect()
+  cargador?.disconnect()
   window.removeEventListener('pointermove', alApuntar)
   window.removeEventListener('touchmove', alApuntar)
   window.removeEventListener('resize', alCambiarTamano)
@@ -102,7 +106,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section ref="seccion" class="noche" :class="{ 'sin-webgl': sinWebgl, lista }">
+  <section ref="seccion" class="noche" :class="{ 'sin-pared': sinPared, lista }">
     <canvas ref="lienzo" class="lienzo" aria-hidden="true" />
     <div class="envoltura contenido">
       <p v-aparecer class="aparece reloj">
@@ -117,7 +121,7 @@ onBeforeUnmount(() => {
       <CitaResena v-aparecer="200" class="aparece lo-dicen" :cita="CITAS.llamada" oscura />
       <a v-aparecer="240" class="aparece llamar" :href="SITIO.telefonoEnlace"><Icono nombre="telefono" />Call {{ SITIO.telefono }}</a>
     </div>
-    <p v-if="!sinWebgl" class="pista" aria-hidden="true">
+    <p v-if="!sinPared" class="pista" aria-hidden="true">
       <svg viewBox="0 0 24 24" width="16" height="16"><path d="M9 3h6l-1 6H10zM10 9h4v11a2 2 0 0 1-4 0z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /></svg>
       {{ tactil ? 'Drag to look around with the flashlight' : 'Move your flashlight to look around' }}
     </p>
@@ -153,9 +157,9 @@ h2 {
 
 /* El texto invierte su color donde le da la linterna: blanco a oscuras, oscuro sobre la pared iluminada */
 .reloj, h2, .texto, .pista, .lo-dicen { mix-blend-mode: difference; }
-.sin-webgl .reloj, .sin-webgl h2, .sin-webgl .texto, .sin-webgl .lo-dicen { mix-blend-mode: normal; }
+.sin-pared .reloj, .sin-pared h2, .sin-pared .texto, .sin-pared .lo-dicen { mix-blend-mode: normal; }
 .lo-dicen { max-width: 46ch; }
-.sin-webgl { background: var(--noche); }
+.sin-pared { background: var(--noche); }
 
 .pista {
   position: absolute;

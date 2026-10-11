@@ -50,7 +50,7 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
 
     <a class="llamar" :href="SITIO.telefonoEnlace" :aria-label="`Call 24/7 · ${SITIO.telefono}`">
       <span class="disponible" aria-hidden="true" />
-      Call 24/7<span class="numero"> · {{ SITIO.telefono }}</span>
+      <span>Call 24/7<span class="numero"> · {{ SITIO.telefono }}</span></span>
     </a>
 
     <a class="boton-redondo llamar-movil" :href="SITIO.telefonoEnlace" aria-label="Call 24/7"><Icono nombre="telefono" /></a>

@@ -4,15 +4,16 @@
 // `dibujar(p)` la pinta con la limpieza en `p` (0 = como la encontramos, 1 = restaurada):
 // el hollín se va primero, el moho se retira de los bordes a los núcleos y el agua baja al secarse.
 
-import { GLSL_COMUN, GLSL_MOHO } from './glslComun'
-import { enlazarPrograma } from './webgl'
+import { GLSL_COMUN, GLSL_MOHO } from './glslComun.js'
+import { enlazarPrograma } from './webgl.js'
 
 export const VERTICES = `
 attribute vec2 aPos;
 void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
 `
 
-const FRAGMENTOS = `
+// También lo usa scripts/hornear-paredes.mjs (las fotos de la pared para los móviles)
+export const FRAGMENTOS = `
 ${GLSL_COMUN}
 
 uniform vec2 uRes;

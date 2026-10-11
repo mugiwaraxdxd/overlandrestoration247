@@ -294,7 +294,8 @@ onBeforeUnmount(() => {
 .seco .estado { background: #dcfce7; color: var(--verde); }
 
 /* ---- El paso de ahora: flota en el agua (su altura y su corte los pone el bucle) ---- */
-.bloque { position: absolute; inset: 0 0 auto; will-change: transform; }
+/* sin bucle todavía (o si no llega a arrancar), apoyado en la parte de abajo, nunca encima del título */
+.bloque { position: absolute; inset: 0 0 auto; transform: translate3d(0, 52vh, 0); will-change: transform; }
 .mojada { clip-path: inset(100% 0 0 0); }
 .mojada .cuando, .mojada .texto { color: rgba(255, 255, 255, .86); }
 .mojada .cuando b { color: #cfe4ff; }

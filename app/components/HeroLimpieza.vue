@@ -1,14 +1,16 @@
 <script setup>
 import { SITIO } from '~/utils/sitio'
 import { crearParedDanada } from '~/utils/paredDanada'
-import { crearParedCacheada } from '~/utils/paredCacheada'
+import { crearParedFotos } from '~/utils/paredFotos'
+import { PARED_HERO, cubrir } from '~/utils/paredesHorneadas'
 import { SERVICIOS } from '~/utils/contenido'
 
 // El hero: la pared dañada se queda fija mientras se hace scroll, y el scroll la limpia.
 // p: 0 = como la encontramos, 1 = restaurada. Los tramos de cada capa son los del shader.
 // En el ordenador, texto y pared a medias y fijos. En el móvil, en dos tiempos: primero el texto
 // con la pared asomando y, al llegar arriba, la pared se queda fija a toda pantalla y se limpia.
-const ENCHUFE = [0.36, 0.24]
+// Con ratón la pared se pinta en vivo (shader); en las pantallas táctiles son sus fotos horneadas.
+const ENCHUFE = PARED_HERO.enchufe
 
 const seccion = ref(null)
 const fijo = ref(null)
@@ -16,8 +18,11 @@ const texto = ref(null)
 const muro = ref(null)
 const lienzo = ref(null)
 const p = ref(0)
-const sinWebgl = ref(false)
+const sinPared = ref(false)
 const lista = ref(false)
+// Con las fotos, dónde cae la foto en la pared (px CSS) y el tamaño de la pared; en vivo, null
+const encuadre = ref(null)
+const caja = ref({ w: 1, h: 1 })
 
 const tramo = (a, b) => computed(() => {
   const t = Math.min(1, Math.max(0, (p.value - a) / (b - a)))
@@ -33,21 +38,36 @@ const seco = computed(() => humedad.value <= 16)
 const limpieza = computed(() => Math.round(pTotal.value * 100))
 const restaurada = computed(() => p.value > 0.91)
 
-// Las anotaciones, colocadas para que no se pisen ni con el medidor (ordenador y móvil)
+// El enchufe, en % de la pared: donde cae en la foto (cada móvil la recorta un poco distinto)
+const enchufe = computed(() => {
+  const e = encuadre.value
+  if (!e) return { x: ENCHUFE[0] * 100, y: (1 - ENCHUFE[1]) * 100 }
+  return {
+    x: ((e.x + ENCHUFE[0] * e.w) / caja.value.w) * 100,
+    y: ((e.y + (1 - ENCHUFE[1]) * e.h) / caja.value.h) * 100
+  }
+})
+
+// Las anotaciones, colocadas para que no se pisen ni con el medidor (ordenador y móvil). La del moho,
+// junto al enchufe («cerca»: % desde él), que es donde nace
 const esMovil = ref(false)
 const ANOTACIONES = {
   ordenador: {
-    hollin: { x: 54, y: 13, dx: -44, dy: 42 },
-    moho: { x: 40, y: 69, dx: 58, dy: -64 },
+    hollin: { x: 56, y: 13, dx: 44, dy: 42 },
+    moho: { cerca: [4, -7], dx: 58, dy: -64 },
     agua: { x: 82, y: 76, dx: -40, dy: -66 }
   },
   movil: {
     hollin: { x: 74, y: 17, dx: -22, dy: 46 },
-    moho: { x: 44, y: 70, dx: 24, dy: -58 },
+    moho: { cerca: [8, -6], dx: 24, dy: -58 },
     agua: { x: 80, y: 90, dx: -24, dy: -22 }
   }
 }
-const sitio = computed(() => ANOTACIONES[esMovil.value ? 'movil' : 'ordenador'])
+const sitio = computed(() => {
+  const s = ANOTACIONES[esMovil.value ? 'movil' : 'ordenador']
+  const { cerca, ...moho } = s.moho
+  return { ...s, moho: { ...moho, x: enchufe.value.x + cerca[0], y: enchufe.value.y + cerca[1] } }
+})
 
 let pared = null
 let objetivo = 0
@@ -101,8 +121,19 @@ function alMoverse() {
   }
 }
 
+// Dónde cae la foto en la pared (con las fotos; la misma cuenta que hace paredFotos al pintarla)
+let conFotos = false
+function medirEncuadre() {
+  if (!conFotos || !lienzo.value) return
+  const w = Math.max(1, lienzo.value.clientWidth)
+  const h = Math.max(1, lienzo.value.clientHeight)
+  caja.value = { w, h }
+  encuadre.value = cubrir(PARED_HERO.ancho / PARED_HERO.alto, w, h)
+}
+
 function alCambiarTamano() {
   medirTope()
+  medirEncuadre()
   pared?.medir()
   pared?.dibujar(p.value)
   alMoverse()
@@ -120,15 +151,16 @@ onMounted(() => {
   medirTope()
   medirObjetivo()
   p.value = reducido ? 1 : objetivo
-  // En el móvil (o una pantalla táctil) la limpieza va pre-calculada; en el ordenador, en vivo. El
-  // shader compila en segundo plano: mientras, se ve la pared limpia y la suciedad aparece fundida
-  const ligero = window.matchMedia('(hover: none), (max-width: 899px)').matches
-  const creada = ligero
-    ? crearParedCacheada(lienzo.value, { enchufe: ENCHUFE })
+  // En el móvil (o una pantalla táctil), sus fotos; en el ordenador, en vivo (el shader compila en
+  // segundo plano). Mientras, se ve la pared limpia y la suciedad aparece fundida
+  conFotos = window.matchMedia('(hover: none), (max-width: 899px)').matches
+  medirEncuadre()
+  const creada = conFotos
+    ? crearParedFotos(lienzo.value)
     : crearParedDanada(lienzo.value, { enchufe: ENCHUFE })
   creada.then((x) => {
     if (desmontado) { x?.destruir(); return }
-    if (!x) { sinWebgl.value = true; return }
+    if (!x) { sinPared.value = true; return }
     pared = x
     pared.dibujar(p.value)
     lista.value = true
@@ -154,7 +186,7 @@ onBeforeUnmount(() => {
 })
 </script>
 <template>
-  <section id="hero" ref="seccion" class="hero" :class="{ 'sin-webgl': sinWebgl, lista }">
+  <section id="hero" ref="seccion" class="hero" :class="{ 'sin-pared': sinPared, lista }">
     <div ref="fijo" class="fijo">
       <div ref="texto" class="texto">
         <p class="antetitulo"><span class="disponible" aria-hidden="true" />24/7 emergency restoration · Cape Coral, FL</p>
@@ -183,7 +215,7 @@ onBeforeUnmount(() => {
 
       <div ref="muro" class="pared">
         <canvas ref="lienzo" class="lienzo" aria-hidden="true" />
-        <Enchufe class="enchufe" :style="{ left: `${ENCHUFE[0] * 100}%`, top: `${(1 - ENCHUFE[1]) * 100}%` }" />
+        <Enchufe class="enchufe" :style="{ left: `${enchufe.x}%`, top: `${enchufe.y}%` }" />
 
         <Anotacion v-bind="sitio.hollin" texto="Smoke & soot" texto-hecho="Soot cleaned" :hecho="pHollin > 0.92" :retraso="900" />
         <Anotacion v-bind="sitio.moho" texto="Mold growth" texto-hecho="Mold removed" :hecho="pMoho > 0.96" :retraso="1150" />
@@ -370,7 +402,7 @@ h1 {
 .sello svg { width: 24px; height: 24px; stroke-width: 2.4; }
 .sello.visible { opacity: 1; scale: 1; }
 
-.sin-webgl .medidor, .sin-webgl .pista { display: none; }
+.sin-pared .medidor, .sin-pared .pista { display: none; }
 
 /* Móvil: el medidor, una píldora (Moisture · Wet · 38 %, con su barra) */
 @media (max-width: 899px) {
