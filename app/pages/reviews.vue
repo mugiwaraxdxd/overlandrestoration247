@@ -41,7 +41,7 @@ const plataformas = Object.entries(POR_PLATAFORMA).map(([p, n]) => `${n} on ${p}
       </div>
     </section>
 
-    <section class="seccion">
+    <section class="seccion muro-seccion">
       <div class="envoltura">
         <div class="filtros" role="group" aria-label="Filter reviews by job">
           <button
@@ -64,7 +64,11 @@ const plataformas = Object.entries(POR_PLATAFORMA).map(([p, n]) => `${n} on ${p}
       </div>
     </section>
 
-    <Contacto />
+    <section class="seccion seccion--bruma">
+      <div class="envoltura">
+        <Contacto />
+      </div>
+    </section>
   </div>
 </template>
 
@@ -72,7 +76,7 @@ const plataformas = Object.entries(POR_PLATAFORMA).map(([p, n]) => `${n} on ${p}
 .cabecera-pagina { padding: 56px 0 40px; background: linear-gradient(180deg, var(--azul-suave), var(--blanco)); }
 .rejilla { display: grid; gap: 32px; align-items: end; }
 h1 { margin: 10px 0 14px; font-size: clamp(34px, 5vw, 56px); font-weight: 800; line-height: 1.08; letter-spacing: -.025em; max-width: 18ch; }
-.seccion { padding-top: 24px; }
+.muro-seccion { padding-top: 24px; }
 .nota { display: grid; gap: 10px; justify-items: start; }
 .cifra { font-size: clamp(64px, 8vw, 96px); font-weight: 800; line-height: .9; letter-spacing: -.04em; color: var(--tinta); }
 .estrellas-grandes { font-size: 34px; }
