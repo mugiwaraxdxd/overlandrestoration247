@@ -88,9 +88,13 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
   align-items: center;
   gap: 10px;
   padding: 0 var(--margen);
-  background: rgba(255, 255, 255, .94);
-  backdrop-filter: saturate(1.4) blur(10px);
+  background: var(--blanco);
   border-bottom: 1px solid var(--linea);
+}
+/* El cristal esmerilado, solo con ratón: en el móvil desenfocar lo de detrás cuesta en cada
+   fotograma del scroll (y al 94 % casi no se nota) */
+@media (hover: hover) and (min-width: 900px) {
+  .cabecera { background: rgba(255, 255, 255, .94); backdrop-filter: saturate(1.4) blur(10px); }
 }
 
 /* Su logo está hecho sobre negro: vive en su placa */

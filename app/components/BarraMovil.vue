@@ -21,8 +21,7 @@ import { SITIO } from '~/utils/sitio'
   grid-template-columns: 1.3fr 1fr;
   gap: 10px;
   padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, .96);
-  backdrop-filter: blur(10px);
+  background: var(--blanco);
   border-top: 1px solid var(--linea);
 }
 .barra-movil a { min-height: 52px; font-size: 16px; }

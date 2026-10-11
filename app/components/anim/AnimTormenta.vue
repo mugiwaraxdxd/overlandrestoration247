@@ -9,6 +9,7 @@ const props = defineProps({ activo: Boolean, visible: Boolean, interactivo: Bool
 const fase = ref(0)
 const { suave } = useProgresoEscena(toRef(props, 'activo'), toRef(props, 'visible'), {
   restaurar: 3000,
+  fpsTactil: 30,
   alCuadro: (t, dt) => { fase.value += dt * 0.004 }
 })
 
@@ -21,13 +22,11 @@ const calma = tramo(0.35, 0.95)    // luego escampa
 const viento = computed(() => Math.sin(fase.value) * (9 * (1 - calma.value) + 1.5) - 10 * (1 - calma.value))
 const mph = computed(() => `${Math.round(8 + 67 * (1 - calma.value))} mph`)
 const listo = computed(() => suave.value > 0.96)
-
-// La lluvia: líneas fijas que la animación hace caer
-const GOTAS = Array.from({ length: 46 }, (_, i) => ({ x: (i * 37) % 420 - 10, y: (i * 53) % 250, d: (i % 7) * 0.11 }))
+const lluvia = computed(() => Math.max(0, 1 - calma.value * 1.2))
 </script>
 
 <template>
-  <div class="tormenta">
+  <div class="tormenta" :class="{ quieta: !visible }">
     <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <defs>
         <linearGradient id="tor-cielo" x1="0" y1="0" x2="0" y2="1">
@@ -94,12 +93,10 @@ const GOTAS = Array.from({ length: 46 }, (_, i) => ({ x: (i * 37) % 420 - 10, y:
           <path d="M120 22 L114 62 M150 38 L146 62 M176 54 L180 70" stroke="#e8edf3" stroke-width="1.6" :opacity="lona" />
         </g>
       </g>
-
-      <!-- la lluvia -->
-      <g class="lluvia" :opacity="Math.max(0, 1 - calma * 1.2)">
-        <line v-for="(g, i) in GOTAS" :key="i" :x1="g.x" :y1="g.y" :x2="g.x - 7" :y2="g.y + 16" :style="{ animationDelay: `${-g.d}s` }" />
-      </g>
     </svg>
+    <!-- la lluvia: una capa con el dibujo de las gotas que se desliza (la mueve la GPU sin repintar
+         la escena; con una línea SVG animada por gota, el móvil repintaba la casa en cada fotograma) -->
+    <div v-if="lluvia > 0.01" class="lluvia" :style="{ opacity: lluvia }"><i /></div>
     <EstadoEscena texto="Roof open · storm" hecho="Tarped & dry" :listo="listo" :dato="mph" />
   </div>
 </template>
@@ -107,8 +104,20 @@ const GOTAS = Array.from({ length: 46 }, (_, i) => ({ x: (i * 37) % 420 - 10, y:
 <style scoped>
 .tormenta { position: absolute; inset: 0; }
 svg { width: 100%; height: 100%; display: block; }
-.lluvia line { stroke: #cfe0f5; stroke-width: 1.6; stroke-linecap: round; opacity: .7; animation: llover .55s linear infinite; }
-@keyframes llover { from { transform: translate(0, -30px); } to { transform: translate(-14px, 30px); } }
+.lluvia { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.lluvia i {
+  position: absolute;
+  top: -120px;
+  right: -60px;
+  bottom: 0;
+  left: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='120'%3E%3Cpath d='M40 8l-8 16M16 50l-8 16M54 76l-8 16M30 98l-8 16' stroke='%23cfe0f5' stroke-opacity='.7' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") 0 0 / 60px 120px;
+  animation: llover .7s linear infinite;
+  will-change: transform;
+}
+/* una baldosa entera por vuelta: el dibujo empalma y no se nota el salto */
+@keyframes llover { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-60px, 120px, 0); } }
+.quieta .lluvia i, .quieta .rayo { animation-play-state: paused; }
 .rayo { animation: rayo 3.4s steps(1) infinite; }
 @keyframes rayo {
   0%, 88%, 92%, 96%, 100% { visibility: hidden; }

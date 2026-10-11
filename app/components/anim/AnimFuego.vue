@@ -23,7 +23,11 @@ let bucle = 0
 let medidoEn = 0
 let volver = null
 let ro = null
-let muestra = null
+// Lo que queda de hollín, en una rejilla de 40 × 25 (1 = sucio): se lleva la cuenta al frotar, sin
+// leer los píxeles del lienzo (getImageData obliga al móvil a esperar a la GPU)
+const GX = 40
+const GY = 25
+const rejilla = new Float32Array(GX * GY)
 
 function medir() {
   const r = raiz.value.getBoundingClientRect()
@@ -70,6 +74,7 @@ function ensuciar() {
     ctx.fillStyle = azar() > 0.5 ? 'rgba(0,0,0,.25)' : 'rgba(150,130,110,.12)'
     ctx.fillRect(azar() * ancho, azar() * alto, 1.4, 1.4)
   }
+  rejilla.fill(1)
   limpio.value = 0
   ultimo = null
 }
@@ -96,23 +101,38 @@ function frotar(x, y) {
     ctx.beginPath()
     ctx.arc(px, py, r, 0, Math.PI * 2)
     ctx.fill()
+    marcarLimpio(px, py, r)
   }
   ultimo = { x, y }
   esponja.value = { x, y, visible: true, giro: Math.max(-18, Math.min(18, (x - desde.x) * 0.6)) }
 }
 
-// Cuánto se ha limpiado: se mira en pequeño (40 × 25) cada 200 ms
+// Lo mismo que hace la pasada en el lienzo (destination-out: 0,9 hasta el 35 % del radio y luego
+// bajando hasta 0 en el borde), en las celdas de la rejilla
+function marcarLimpio(px, py, r) {
+  const cw = ancho / GX
+  const ch = alto / GY
+  const x0 = Math.max(0, Math.floor((px - r) / cw))
+  const x1 = Math.min(GX - 1, Math.floor((px + r) / cw))
+  const y0 = Math.max(0, Math.floor((py - r) / ch))
+  const y1 = Math.min(GY - 1, Math.floor((py + r) / ch))
+  for (let j = y0; j <= y1; j++) {
+    for (let i = x0; i <= x1; i++) {
+      const d = Math.hypot((i + 0.5) * cw - px, (j + 0.5) * ch - py) / r
+      if (d >= 1) continue
+      const quita = d < 0.35 ? 0.9 : 0.9 * (1 - (d - 0.35) / 0.65)
+      rejilla[j * GX + i] *= 1 - quita
+    }
+  }
+}
+
+// Cuánto se ha limpiado, cada 200 ms
 function medirLimpio(ahora) {
-  if (ahora - medidoEn < 200 || !lienzo.value) return
+  if (ahora - medidoEn < 200) return
   medidoEn = ahora
-  muestra ??= Object.assign(document.createElement('canvas'), { width: 40, height: 25 })
-  const m = muestra.getContext('2d', { willReadFrequently: true })
-  m.clearRect(0, 0, 40, 25)
-  m.drawImage(lienzo.value, 0, 0, 40, 25)
-  const d = m.getImageData(0, 0, 40, 25).data
   let suma = 0
-  for (let i = 3; i < d.length; i += 4) suma += d[i]
-  limpio.value = Math.min(1, Math.max(0, 1 - suma / (40 * 25 * 255 * 0.82)))
+  for (let k = 0; k < rejilla.length; k++) suma += rejilla[k]
+  limpio.value = Math.min(1, Math.max(0, 1 - suma / rejilla.length))
 }
 
 // La esponja sola: pasadas de lado a lado, de arriba abajo

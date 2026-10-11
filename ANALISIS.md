@@ -20,6 +20,13 @@ Web actual: https://www.overlandrestoration247.com/ (revisada el 2026-10-10)
 - **Contenido**: todo de su web, con `scripts/extraer-contenido.mjs` → `app/utils/contenidoWeb.json`; ordenado en `app/utils/contenido.js`. Su web tiene relleno publicado que se filtra: «Lorem ipsum», «(Location)», «(Company Name)» y preguntas de plantilla («What is an FAQ?») en sus páginas de ciudad. **Contárselo en la propuesta**: es un argumento más.
 - El formulario de fotos es de demo (no envía).
 
+## Rendimiento (2026-10-10, tras probarla en un móvil: «bajón de fps horrible»)
+Medido con Playwright contra el build (`node .output/server/index.mjs`), en un iPhone simulado, con la GPU del PC y con swiftshader como GPU floja. Con la floja, antes → después: hero 12 → 55 fps, servicios (un tirón de 11 s) → 37, cómo trabajamos 11 → 41, linterna 2 → 60, mapa 20 → 60.
+- **Shaders y Direct3D**: Chrome, Edge y Firefox en Windows traducen el WebGL a Direct3D, y su compilador desenrollaba el moho: la pared del hero tardaba **24–30 s** en compilar con la página congelada (solo la primera visita: luego el navegador lo guarda; por eso no se notaba al probarla). Arreglado: el bucle del `fbm` lleva una salida que depende de un uniform (`uCero`, siempre 0) y no se desenrolla, fuera las capas de gotera e inundación (de la pared de página entera, sin uso), y se compila en segundo plano (`utils/webgl.js`, `KHR_parallel_shader_compile`). En Direct3D va primero una versión sin las motitas (1,5 s) y la completa entra sola después (6 s). Lo nuevo con shaders, igual: medir su compilación con D3D11 (`--use-angle=d3d11`), no solo con OpenGL (0,5 s).
+- **El hero en el móvil** no pinta el shader en cada fotograma: 17 fotos de la limpieza hechas en los ratos libres al cargar, que se funden con el scroll (`utils/paredCacheada.js`). En el ordenador, en vivo. Fuera de pantalla no se pinta.
+- **La linterna**: la pared se calcula una vez y la luz es Canvas 2D (antes, el shader entero en cada fotograma: 2 fps). Se prepara cuatro pantallas antes de llegar.
+- Cómo trabajamos solo anima mientras persigue al scroll o se ve algo que se mueve solo, a 30 fps; las escenas SVG de agua y tormenta, a 30 fps en pantallas táctiles; la lluvia es una capa que desliza la GPU; el hollín cuenta lo limpiado en una rejilla, sin leer píxeles; sin `backdrop-filter` en el móvil.
+
 ## Las piezas del logo
 - Está hecho sobre negro. Piezas sacadas del JPG original con el negro hecho transparente (`public/logo/`: `simbolo`, `overland`, `restoration`, `lema`, `logo-transparente`). Se combinan, no se redibujan: en la cabecera de ordenador símbolo + OVERLAND + RESTORATION en horizontal; en el móvil, símbolo + OVERLAND; entero y grande, solo en el pie. Para la versión final, pedirle el archivo vectorial.
 

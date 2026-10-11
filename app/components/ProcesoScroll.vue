@@ -14,6 +14,8 @@ let bucle = 0
 let visible = false
 let reducido = false
 let observador = null
+let topeFijo = 0
+let ultimaFase = 0
 
 const N = PASOS.length
 const paso = computed(() => Math.min(N - 1, Math.floor(p.value * N)))
@@ -60,36 +62,69 @@ const superficie = computed(() => ola(400 - nivelAgua.value, 3 * (nivelAgua.valu
 // Las palas de los ventiladores
 const giro = computed(() => (fase.value * 140) % 360)
 
+function medirTope() {
+  topeFijo = fijo.value ? parseFloat(getComputedStyle(fijo.value).top) || 0 : 0
+}
+
 function medir() {
   const s = seccion.value
   const f = fijo.value
   if (!s || !f) return
   const recorrido = s.offsetHeight - f.offsetHeight
-  const arriba = s.getBoundingClientRect().top - (parseFloat(getComputedStyle(f).top) || 0)
+  const arriba = s.getBoundingClientRect().top - topeFijo
   objetivo = recorrido > 0 ? Math.min(1, Math.max(0, -arriba / recorrido)) : 0
 }
 
-function cuadro() {
+// Lo que se mueve solo: el agua (pasos 1 a 3), el HEPA (3 y 4) y los ventiladores (4)
+const seMueve = () => nivelAgua.value > 0.5 || (p3.value > 0 && p5.value < 0.5)
+
+// Solo hay bucle mientras el valor persigue al scroll o se ve algo que se mueve solo; y lo que se
+// mueve solo va a 30 fotogramas por segundo (el agua y las palas, despacio, no necesitan más y
+// cada fotograma repinta la escena)
+function cuadro(t) {
   bucle = 0
-  medir()
   const d = objetivo - p.value
-  p.value = Math.abs(d) < 0.0005 ? objetivo : p.value + d * 0.14
-  fase.value += 0.045
-  if (visible) bucle = requestAnimationFrame(cuadro)
+  if (d !== 0) p.value = Math.abs(d) < 0.0005 ? objetivo : p.value + d * 0.14
+  const mueve = seMueve()
+  if (mueve && t - ultimaFase > 30) {
+    fase.value += 0.09 * Math.min(2, (t - ultimaFase) / 33)
+    ultimaFase = t
+  }
+  if (visible && (p.value !== objetivo || mueve)) bucle = requestAnimationFrame(cuadro)
+}
+
+function arrancar() {
+  if (!bucle && visible) bucle = requestAnimationFrame(cuadro)
+}
+
+function alMoverse() {
+  if (!visible) return
+  medir()
+  arrancar()
+}
+
+function alCambiarTamano() {
+  medirTope()
+  alMoverse()
 }
 
 onMounted(() => {
   reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if (reducido) { p.value = 1; return }
+  medirTope()
   observador = new IntersectionObserver(([e]) => {
     visible = e.isIntersecting
-    if (visible && !bucle) bucle = requestAnimationFrame(cuadro)
+    if (visible) { medir(); arrancar() }
   })
   observador.observe(seccion.value)
+  window.addEventListener('scroll', alMoverse, { passive: true })
+  window.addEventListener('resize', alCambiarTamano)
 })
 onBeforeUnmount(() => {
   cancelAnimationFrame(bucle)
   observador?.disconnect()
+  window.removeEventListener('scroll', alMoverse)
+  window.removeEventListener('resize', alCambiarTamano)
 })
 </script>
 
@@ -177,7 +212,7 @@ onBeforeUnmount(() => {
             </g>
 
             <!-- lo que descubrió la cámara (queda marcado) -->
-            <g :opacity="marcas">
+            <g v-if="marcas > 0.01" :opacity="marcas">
               <ellipse cx="150" cy="232" rx="92" ry="58" fill="none" stroke="#1a64c8" stroke-width="2.5" stroke-dasharray="7 6" />
               <ellipse cx="330" cy="236" rx="70" ry="44" fill="none" stroke="#1a64c8" stroke-width="2.5" stroke-dasharray="7 6" />
               <g transform="translate(250 150)">
@@ -233,7 +268,7 @@ onBeforeUnmount(() => {
             <path v-if="nivelAgua > 0.5" :d="superficie" fill="url(#pr-agua)" />
 
             <!-- ventiladores y deshumidificador (paso 4) -->
-            <g :opacity="maquinas">
+            <g v-if="maquinas > 0.01" :opacity="maquinas">
               <g v-for="(x, i) in [210, 360]" :key="i" :transform="`translate(${x} 318)`">
                 <rect x="-6" y="40" width="72" height="10" rx="4" fill="#1f2a37" />
                 <circle cx="30" cy="22" r="30" fill="#1a64c8" />
@@ -254,7 +289,7 @@ onBeforeUnmount(() => {
             </g>
 
             <!-- el teléfono (paso 1) -->
-            <g :opacity="telefono" :transform="`translate(250 ${30 + 20 * (1 - Math.min(1, p1 * 3))})`">
+            <g v-if="telefono > 0.01" :opacity="telefono" :transform="`translate(250 ${30 + 20 * (1 - Math.min(1, p1 * 3))})`">
               <g v-if="!contestado" class="ondas" fill="none" stroke="#cf4410" stroke-width="3">
                 <circle cx="80" cy="120" r="94" />
                 <circle cx="80" cy="120" r="94" />

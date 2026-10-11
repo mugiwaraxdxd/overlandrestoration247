@@ -10,6 +10,7 @@ const fase = ref(0)
 const giro = ref(0)
 const { suave } = useProgresoEscena(toRef(props, 'activo'), toRef(props, 'visible'), {
   restaurar: 2600,
+  fpsTactil: 30,
   alCuadro: (t, dt) => {
     fase.value += dt * 0.0026
     if (t > 0.05 && t < 0.995) giro.value = (giro.value + dt * 1.4) % 360
@@ -35,7 +36,7 @@ const listo = computed(() => suave.value > 0.96)
 </script>
 
 <template>
-  <div class="agua">
+  <div class="agua" :class="{ quieta: !visible }">
     <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <defs>
         <linearGradient id="agua-pared" x1="0" y1="0" x2="0" y2="1">
@@ -97,7 +98,7 @@ const listo = computed(() => suave.value > 0.96)
           <circle cx="32" cy="22" r="4" fill="#fff" />
         </g>
       </g>
-      <g :opacity="suave > 0.12 && suave < 0.995 ? 0.8 : 0" class="aire">
+      <g v-if="suave > 0.12 && suave < 0.995" opacity=".8" class="aire">
         <path d="M265 160 Q 220 150 180 162" />
         <path d="M265 176 Q 210 170 150 180" />
         <path d="M265 192 Q 225 188 190 194" />
@@ -117,6 +118,7 @@ svg { width: 100%; height: 100%; display: block; }
   80% { transform: translateY(175px); opacity: 1; }
   100% { transform: translateY(180px); opacity: 0; }
 }
+.quieta .gota, .quieta .aire path { animation-play-state: paused; }
 .aire path { fill: none; stroke: #7fb2ee; stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: 10 14; animation: soplar .6s linear infinite; }
 .aire { transition: opacity .3s; }
 @keyframes soplar { to { stroke-dashoffset: 24; } }
