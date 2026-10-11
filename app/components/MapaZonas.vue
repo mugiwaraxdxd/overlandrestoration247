@@ -196,6 +196,21 @@ svg { display: block; width: 100%; height: auto; }
 @keyframes latido-mapa { from { transform: scale(.6); opacity: .5; } to { transform: scale(2.2); opacity: 0; } }
 .nota { position: absolute; left: 14px; bottom: 12px; padding: 4px 10px; border-radius: var(--pildora); background: rgba(255, 255, 255, .9); font-size: 12px; color: var(--tinta-3); }
 
+/* Móvil y tableta: el mapa primero. Las ciudades de la lista se encienden con el mapa: debajo de
+   ella, el mapa no había entrado aún en pantalla y la lista se quedaba apagada */
+@media (max-width: 999px) {
+  .marco { order: -1; }
+}
+/* Móvil: la distancia debajo del nombre (si no, «Fort Myers Beach» ocupaba tres líneas) y la nota
+   debajo del mapa (tapaba Marco Island) */
+@media (max-width: 599px) {
+  .lista { gap: 2px 10px; }
+  .lista a { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; column-gap: 10px; row-gap: 0; padding: 8px 8px; }
+  .punto { margin-top: 5px; }
+  .lista b { line-height: 1.3; }
+  .dist { grid-column: 2; margin-left: 0; font-size: 12px; }
+  .nota { position: static; padding: 9px 14px; border-radius: 0; font-size: 11px; }
+}
 @media (min-width: 1000px) {
   .mapa-zonas { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 48px; }
   .lista { grid-template-columns: 1fr; }
