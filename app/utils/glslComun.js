@@ -6,6 +6,11 @@ precision highp float;
 precision mediump float;
 #endif
 
+// Siempre 0 (nadie la pone). Solo sirve para que el compilador no desenrolle los bucles: Chrome en
+// Windows traduce el shader a Direct3D y su compilador, desenrollando el fbm en cada llamada, tardaba
+// 24 s con la pared del hero (la página congelada en la primera visita). Con esto, 4 s y en segundo plano
+uniform float uCero;
+
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
   p += dot(p, p + 45.32);
@@ -28,6 +33,7 @@ float fbm(vec2 p) {
   float a = 0.5;
   mat2 m = mat2(1.6, 1.2, -1.2, 1.6);
   for (int i = 0; i < 5; i++) {
+    if (float(i) > 4.5 + uCero) break;
     v += a * noise(p);
     p = m * p;
     a *= 0.5;
@@ -43,7 +49,9 @@ float hasta(float lo, float hi, float x) { return 1.0 - smoothstep(lo, hi, x); }
 // un manto difuso y moteado, de marrón a negruzco, con el borde que se deshace en motas;
 // encima, motitas apiñadas y alguna peca de óxido; el papel de alrededor, amarillento.
 // «deja»: 1 = el moho puede estar aquí, 0 = no (detrás del texto). «cerco»: el cerco de agua alrededor.
+// Con SIN_MOTAS definido, sin las motitas: es la versión previa, que compila en una cuarta parte
 export const GLSL_MOHO = `
+#ifndef SIN_MOTAS
 // Colonias redondas: una posible por celda, nace según la densidad, y su radio también
 // «semilla» solo cambia el azar de cada capa; la densidad se mide siempre en el sitio de verdad
 float colonias(vec2 pos, float escala, float tam, float fertil, float rugoso, float semilla, out float halo) {
@@ -70,6 +78,7 @@ float colonias(vec2 pos, float escala, float tam, float fertil, float rugoso, fl
   halo = hal;
   return nuc;
 }
+#endif
 
 vec3 pintarMoho(vec3 col, vec2 q, float Dp, float deja, float cerco) {
   vec2 qw = q + 0.08 * vec2(fbm(q * 2.0 + 31.0), fbm(q * 2.0 + 47.0));
@@ -97,12 +106,17 @@ vec3 pintarMoho(vec3 col, vec2 q, float Dp, float deja, float cerco) {
   col = mix(col, vec3(0.55, 0.43, 0.27), linea * 0.45 * cerco * deja);
 
   // Motitas: muchas y pequeñas, irregulares, apiñadas donde hay más
+#ifdef SIN_MOTAS
+  float motas = 0.0;
+  float sombra = 0.0;
+#else
   float h1, h2, h3;
   float c1 = colonias(q, 36.0, 0.85, 0.9, 0.55, 0.0, h1);
   float c2 = colonias(q, 85.0, 0.9, 1.35, 0.45, 41.0, h2);
   float c3 = colonias(q, 180.0, 0.85, 1.6, 0.3, 83.0, h3);
   float motas = max(c1 * 0.85, max(c2 * 0.8, c3 * 0.7));
   float sombra = max(h1 * 0.35, h2 * 0.25);
+#endif
   vec3 colMota = mix(vec3(0.1, 0.09, 0.075), vec3(0.25, 0.2, 0.14), noise(q * 47.0));
   col = mix(col, col * vec3(0.82, 0.8, 0.74), sombra * deja);
   col = mix(col, colMota, motas * deja);

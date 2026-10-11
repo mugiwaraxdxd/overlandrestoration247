@@ -1,6 +1,7 @@
 <script setup>
 import { SITIO } from '~/utils/sitio'
 import { crearParedDanada } from '~/utils/paredDanada'
+import { crearParedCacheada } from '~/utils/paredCacheada'
 import { SERVICIOS } from '~/utils/contenido'
 
 // El hero: la pared dañada se queda fija mientras se hace scroll, y el scroll la limpia.
@@ -12,6 +13,7 @@ const fijo = ref(null)
 const lienzo = ref(null)
 const p = ref(0)
 const sinWebgl = ref(false)
+const lista = ref(false)
 
 const tramo = (a, b) => computed(() => {
   const t = Math.min(1, Math.max(0, (p.value - a) / (b - a)))
@@ -47,18 +49,33 @@ let pared = null
 let objetivo = 0
 let animando = false
 let reducido = false
+let visible = true
+let topeFijo = 0
+let observador = null
+let desmontado = false
+
+function medirTope() {
+  topeFijo = fijo.value ? parseFloat(getComputedStyle(fijo.value).top) || 0 : 0
+}
 
 function medirObjetivo() {
   const s = seccion.value
   const f = fijo.value
   if (!s || !f) return
   const recorrido = s.offsetHeight - f.offsetHeight
-  const arriba = s.getBoundingClientRect().top - (parseFloat(getComputedStyle(f).top) || 0)
+  const arriba = s.getBoundingClientRect().top - topeFijo
   objetivo = recorrido > 0 ? Math.min(1, Math.max(0, -arriba / recorrido)) : 0
 }
 
-// El valor persigue al scroll con suavidad: limpiar se siente como pasar la bayeta, no a saltos
+// El valor persigue al scroll con suavidad: limpiar se siente como pasar la bayeta, no a saltos.
+// Fuera de la pantalla no se anima ni se pinta (saltar con un enlace hasta abajo pintaba la
+// limpieza entera sin que nadie la viera)
 function paso() {
+  if (!visible) {
+    p.value = objetivo
+    animando = false
+    return
+  }
   const d = objetivo - p.value
   p.value = Math.abs(d) < 0.0008 ? objetivo : p.value + d * 0.16
   pared?.dibujar(p.value)
@@ -67,7 +84,7 @@ function paso() {
 }
 
 function alMoverse() {
-  if (reducido) return
+  if (reducido || !visible) return
   medirObjetivo()
   if (!animando) {
     animando = true
@@ -76,6 +93,7 @@ function alMoverse() {
 }
 
 function alCambiarTamano() {
+  medirTope()
   pared?.medir()
   pared?.dibujar(p.value)
   alMoverse()
@@ -86,25 +104,45 @@ onMounted(() => {
   const movil = window.matchMedia('(max-width: 899px)')
   esMovil.value = movil.matches
   movil.addEventListener('change', (e) => { esMovil.value = e.matches })
-  pared = crearParedDanada(lienzo.value, { enchufe: ENCHUFE })
-  if (!pared) sinWebgl.value = true
   if (reducido) p.value = 1
-  pared?.dibujar(p.value)
+  medirTope()
   medirObjetivo()
   p.value = reducido ? 1 : objetivo
-  pared?.dibujar(p.value)
+  // En el móvil (o una pantalla táctil) la limpieza va pre-calculada; en el ordenador, en vivo. El
+  // shader compila en segundo plano: mientras, se ve la pared limpia y la suciedad aparece fundida
+  const ligero = window.matchMedia('(hover: none), (max-width: 899px)').matches
+  const creada = ligero
+    ? crearParedCacheada(lienzo.value, { enchufe: ENCHUFE })
+    : crearParedDanada(lienzo.value, { enchufe: ENCHUFE })
+  creada.then((x) => {
+    if (desmontado) { x?.destruir(); return }
+    if (!x) { sinWebgl.value = true; return }
+    pared = x
+    pared.dibujar(p.value)
+    lista.value = true
+  })
   window.addEventListener('scroll', alMoverse, { passive: true })
   window.addEventListener('resize', alCambiarTamano)
+  observador = new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting
+    if (!visible) return
+    medirObjetivo()
+    p.value = reducido ? 1 : objetivo
+    pared?.dibujar(p.value)
+  })
+  observador.observe(fijo.value)
 })
 
 onBeforeUnmount(() => {
+  desmontado = true
+  observador?.disconnect()
   window.removeEventListener('scroll', alMoverse)
   window.removeEventListener('resize', alCambiarTamano)
   pared?.destruir()
 })
 </script>
 <template>
-  <section id="hero" ref="seccion" class="hero" :class="{ 'sin-webgl': sinWebgl }">
+  <section id="hero" ref="seccion" class="hero" :class="{ 'sin-webgl': sinWebgl, lista }">
     <div ref="fijo" class="fijo">
       <div class="texto">
         <p class="antetitulo"><span class="disponible" aria-hidden="true" />24/7 emergency restoration · Cape Coral, FL</p>
@@ -242,7 +280,8 @@ h1 {
   container-type: size;
   background: #ecebe6;
 }
-.lienzo { position: absolute; inset: 0; width: 100%; height: 100%; }
+.lienzo { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .7s var(--curva); }
+.lista .lienzo { opacity: 1; }
 .enchufe { position: absolute; width: 5.2cqh; min-width: 26px; translate: -50% -50%; }
 
 /* El medidor de humedad: una tarjeta blanca */

@@ -11,6 +11,7 @@ const tactil = ref(false)
 const sinWebgl = ref(false)
 const seccion = ref(null)
 const lienzo = ref(null)
+const lista = ref(false)
 
 let temporizador = null
 let pared = null
@@ -18,6 +19,8 @@ let visible = false
 let reducido = false
 let bucle = 0
 let observador = null
+let creando = null
+let desmontado = false
 const luz = { x: 0, y: 0, destinoX: 0, destinoY: 0, ultimoGesto: -1e9, colocada: false }
 
 // Si nadie la mueve en 2,5 s, la luz recorre la parte visible de la sección despacio
@@ -61,17 +64,24 @@ onMounted(() => {
   tactil.value = window.matchMedia('(hover: none)').matches
   reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  pared = crearParedNoche(lienzo.value)
-  if (!pared) {
-    sinWebgl.value = true
-    return
-  }
-  // Solo se pinta mientras se ve
+  // La pared se pinta (una vez) cuando faltan cuatro pantallas para llegar, no al cargar la página
+  // (su shader compila en segundo plano: en Chrome de Windows, unos segundos); y la luz solo se
+  // mueve mientras se ve
   observador = new IntersectionObserver(([e]) => {
     visible = e.isIntersecting
+    if (visible && !creando) {
+      creando = crearParedNoche(lienzo.value).then((p) => {
+        if (desmontado) { p?.destruir(); return }
+        if (!p) { sinWebgl.value = true; return }
+        pared = p
+        lista.value = true
+        if (visible) bucle = requestAnimationFrame(pintar)
+      })
+    }
     cancelAnimationFrame(bucle)
-    if (visible) bucle = requestAnimationFrame(pintar)
-  })
+    bucle = 0
+    if (visible && pared) bucle = requestAnimationFrame(pintar)
+  }, { rootMargin: '400% 0px' })
   observador.observe(seccion.value)
   window.addEventListener('pointermove', alApuntar, { passive: true })
   window.addEventListener('touchmove', alApuntar, { passive: true })
@@ -79,6 +89,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  desmontado = true
   clearInterval(temporizador)
   cancelAnimationFrame(bucle)
   observador?.disconnect()
@@ -90,7 +101,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section ref="seccion" class="noche" :class="{ 'sin-webgl': sinWebgl }">
+  <section ref="seccion" class="noche" :class="{ 'sin-webgl': sinWebgl, lista }">
     <canvas ref="lienzo" class="lienzo" aria-hidden="true" />
     <div class="envoltura contenido">
       <p v-aparecer class="aparece reloj">
@@ -122,7 +133,8 @@ onBeforeUnmount(() => {
   padding: 120px 0 140px;
   overflow: hidden;
 }
-.lienzo { position: absolute; inset: 0; width: 100%; height: 100%; }
+.lienzo { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .8s var(--curva); }
+.lista .lienzo { opacity: 1; }
 .contenido { position: relative; display: grid; gap: 22px; justify-items: start; }
 .reloj { display: inline-flex; align-items: center; gap: 10px; color: #cfd6e0; font-size: 15px; }
 .reloj b { color: #fff; }
