@@ -21,8 +21,8 @@ useHead({ title: '' })
       </div>
     </section>
 
-    <!-- Cómo trabajan, contado con el scroll -->
-    <ProcesoScroll />
+    <!-- Cómo trabajan: el parte de un trabajo que se rellena con el scroll -->
+    <ParteTrabajo />
 
     <!-- Las 2 a.m.: la pared a oscuras y una linterna -->
     <NocheLinterna />

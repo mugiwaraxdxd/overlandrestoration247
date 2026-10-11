@@ -6,10 +6,14 @@ import { SERVICIOS } from '~/utils/contenido'
 
 // El hero: la pared dañada se queda fija mientras se hace scroll, y el scroll la limpia.
 // p: 0 = como la encontramos, 1 = restaurada. Los tramos de cada capa son los del shader.
+// En el ordenador, texto y pared a medias y fijos. En el móvil, en dos tiempos: primero el texto
+// con la pared asomando y, al llegar arriba, la pared se queda fija a toda pantalla y se limpia.
 const ENCHUFE = [0.36, 0.24]
 
 const seccion = ref(null)
 const fijo = ref(null)
+const texto = ref(null)
+const muro = ref(null)
 const lienzo = ref(null)
 const p = ref(0)
 const sinWebgl = ref(false)
@@ -38,9 +42,9 @@ const ANOTACIONES = {
     agua: { x: 82, y: 76, dx: -40, dy: -66 }
   },
   movil: {
-    hollin: { x: 84, y: 10, dx: -26, dy: 70 },
-    moho: { x: 38, y: 70, dx: 22, dy: -44 },
-    agua: { x: 86, y: 84, dx: -30, dy: -28 }
+    hollin: { x: 74, y: 17, dx: -22, dy: 46 },
+    moho: { x: 44, y: 70, dx: 24, dy: -58 },
+    agua: { x: 80, y: 90, dx: -24, dy: -22 }
   }
 }
 const sitio = computed(() => ANOTACIONES[esMovil.value ? 'movil' : 'ordenador'])
@@ -54,16 +58,21 @@ let topeFijo = 0
 let observador = null
 let desmontado = false
 
+// Lo que se queda fijo: en el ordenador, todo; en el móvil, solo la pared
+const pegado = () => (esMovil.value ? muro.value : fijo.value)
+
 function medirTope() {
-  topeFijo = fijo.value ? parseFloat(getComputedStyle(fijo.value).top) || 0 : 0
+  topeFijo = pegado() ? parseFloat(getComputedStyle(pegado()).top) || 0 : 0
 }
 
 function medirObjetivo() {
   const s = seccion.value
-  const f = fijo.value
+  const f = pegado()
   if (!s || !f) return
-  const recorrido = s.offsetHeight - f.offsetHeight
-  const arriba = s.getBoundingClientRect().top - topeFijo
+  // en el móvil la limpieza empieza cuando la pared, debajo del texto, llega arriba
+  const inicio = esMovil.value && texto.value ? texto.value.offsetTop + texto.value.offsetHeight : 0
+  const recorrido = s.offsetHeight - inicio - f.offsetHeight
+  const arriba = s.getBoundingClientRect().top + inicio - topeFijo
   objetivo = recorrido > 0 ? Math.min(1, Math.max(0, -arriba / recorrido)) : 0
 }
 
@@ -103,7 +112,10 @@ onMounted(() => {
   reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const movil = window.matchMedia('(max-width: 899px)')
   esMovil.value = movil.matches
-  movil.addEventListener('change', (e) => { esMovil.value = e.matches })
+  movil.addEventListener('change', (e) => {
+    esMovil.value = e.matches
+    nextTick(alCambiarTamano)
+  })
   if (reducido) p.value = 1
   medirTope()
   medirObjetivo()
@@ -130,7 +142,7 @@ onMounted(() => {
     p.value = reducido ? 1 : objetivo
     pared?.dibujar(p.value)
   })
-  observador.observe(fijo.value)
+  observador.observe(seccion.value)
 })
 
 onBeforeUnmount(() => {
@@ -144,7 +156,7 @@ onBeforeUnmount(() => {
 <template>
   <section id="hero" ref="seccion" class="hero" :class="{ 'sin-webgl': sinWebgl, lista }">
     <div ref="fijo" class="fijo">
-      <div class="texto">
+      <div ref="texto" class="texto">
         <p class="antetitulo"><span class="disponible" aria-hidden="true" />24/7 emergency restoration · Cape Coral, FL</p>
         <h1>
           <span class="linea"><span>Water, fire &amp; storm</span></span>
@@ -169,7 +181,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div class="pared">
+      <div ref="muro" class="pared">
         <canvas ref="lienzo" class="lienzo" aria-hidden="true" />
         <Enchufe class="enchufe" :style="{ left: `${ENCHUFE[0] * 100}%`, top: `${(1 - ENCHUFE[1]) * 100}%` }" />
 
@@ -197,28 +209,25 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
+    <!-- en el móvil, el recorrido de scroll durante el que la pared se queda fija -->
+    <div class="recorrido" aria-hidden="true" />
   </section>
 </template>
 
 <style scoped>
-/* La sección es más alta que la pantalla: mientras se recorre, la pared se queda fija y se limpia */
+/* La sección es más alta que la pantalla: mientras se recorre, la pared se queda fija y se limpia.
+   Móvil: el texto y, debajo, la pared, que al llegar arriba se queda fija a toda pantalla durante
+   el «recorrido» (el ordenador, abajo) */
 .hero {
   position: relative;
-  height: 230svh;
   background: var(--blanco);
 }
-.fijo {
-  position: sticky;
-  top: var(--alto-cabecera);
-  height: calc(100svh - var(--alto-cabecera) - var(--alto-barra-movil));
-  display: grid;
-  grid-template-rows: auto 1fr;
-  grid-template-columns: minmax(0, 1fr);   /* que la fila de servicios no ensanche el texto */
-}
+.fijo { display: contents; }
+.recorrido { height: 150svh; }
 
 /* ---- El texto ---- */
 .texto {
-  padding: 22px var(--margen) 18px;
+  padding: 22px var(--margen) 26px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -243,23 +252,20 @@ h1 {
 @keyframes entrar { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
 .servicios {
-  display: flex;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  margin: 0 calc(-1 * var(--margen));
-  padding: 0 var(--margen);
-  overflow-x: auto;
-  scrollbar-width: none;
+  margin-top: 4px;
+  padding: 0;
   list-style: none;
   animation: entrar .7s var(--curva) .42s both;
 }
-.servicios::-webkit-scrollbar { display: none; }
 .servicios a {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   height: 40px;
-  padding: 0 16px 0 12px;
+  padding: 0 10px;
   border-radius: var(--pildora);
   background: var(--azul-suave);
   color: var(--tinta);
@@ -270,12 +276,14 @@ h1 {
   transition: background-color .2s var(--curva);
 }
 .servicios a:hover { background: #d6e6fa; }
-.servicios svg { width: 20px; height: 20px; color: var(--azul); }
+.servicios svg { width: 20px; height: 20px; flex: none; color: var(--azul); }
 .acciones { display: none; }
 
 /* ---- La pared ---- */
 .pared {
-  position: relative;
+  position: sticky;
+  top: var(--alto-cabecera);
+  height: calc(100svh - var(--alto-cabecera) - var(--alto-barra-movil));
   overflow: hidden;
   container-type: size;
   background: #ecebe6;
@@ -364,14 +372,37 @@ h1 {
 
 .sin-webgl .medidor, .sin-webgl .pista { display: none; }
 
-/* ---- Escritorio: mitad texto, mitad pared ---- */
+/* Móvil: el medidor, una píldora (Moisture · Wet · 38 %, con su barra) */
+@media (max-width: 899px) {
+  .medidor {
+    left: 12px;
+    top: 12px;
+    width: auto;
+    padding: 9px 12px 10px;
+    border-radius: 14px;
+    grid-template-columns: auto auto;
+    align-items: center;
+    gap: 6px 14px;
+  }
+  .medidor .fila:first-child { gap: 8px; }
+  .lectura { font-size: 24px; }
+  .lectura span { font-size: 13px; }
+  .barra { grid-column: 1 / -1; height: 4px; }
+  .pie-medidor { display: none; }
+}
+
+/* ---- Escritorio: mitad texto, mitad pared, y todo fijo ---- */
 @media (min-width: 900px) {
   .hero { height: 260vh; }
   .fijo {
+    position: sticky;
+    top: var(--alto-cabecera);
     height: calc(100vh - var(--alto-cabecera));
-    grid-template-rows: none;
+    display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
+  .pared { position: relative; top: auto; height: auto; }
+  .recorrido { display: none; }
   .texto {
     justify-content: center;
     gap: 22px;
@@ -380,7 +411,8 @@ h1 {
   .antetitulo { font-size: 14px; }
   h1 { font-size: clamp(40px, 4.4vw, 68px); }
   .entradilla { font-size: 19px; }
-  .servicios { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; }
+  .servicios { display: flex; flex-wrap: wrap; margin: 0; }
+  .servicios a { display: inline-flex; gap: 8px; padding: 0 16px 0 12px; }
   .acciones {
     display: flex;
     flex-wrap: wrap;
