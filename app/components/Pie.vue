@@ -11,6 +11,7 @@ import { TOTAL_RESENAS, NOTA_MEDIA } from '~/utils/resenas'
       <div class="marca">
         <img class="logo" src="/logo/logo-transparente.png" alt="Overland Restoration 24/7 · Water · Fire · Mold" width="1324" height="940" loading="lazy">
         <p>Owner-operated water, fire, storm and mold restoration in Cape Coral and Southwest Florida. On call 24/7.</p>
+        <NuxtLink to="/gallery" class="nota-pie">Our work: real jobs, photo by photo →</NuxtLink>
         <NuxtLink to="/reviews" class="nota-pie"><span aria-hidden="true">★★★★★</span> {{ NOTA_MEDIA.toFixed(1) }} · {{ TOTAL_RESENAS }} reviews</NuxtLink>
       </div>
       <div>

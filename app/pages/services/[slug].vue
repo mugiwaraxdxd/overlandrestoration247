@@ -1,11 +1,14 @@
 <script setup>
 import { SITIO } from '~/utils/sitio'
 import { servicioDe } from '~/utils/contenido'
+import { obraDe } from '~/utils/obras'
 
 // La página de un servicio: todo su contenido sale de la página equivalente de su web
 const route = useRoute()
 const s = computed(() => servicioDe(route.params.slug))
 if (!s.value) throw createError({ statusCode: 404, statusMessage: 'Service not found', fatal: true })
+// Un trabajo real de este tipo, si lo hay (de su galería)
+const obra = computed(() => obraDe(s.value.slug))
 
 // La primera frase o dos de su intro (sus párrafos son muy largos para la cabecera)
 function resumen(t = '') {
@@ -82,6 +85,7 @@ useHead(() => ({
           <h2 v-aparecer="80" class="aparece titulo-2">From your call to a restored home.</h2>
         </div>
         <Pasos />
+        <ObraEnServicio v-if="obra" :obra="obra" />
       </div>
     </section>
 

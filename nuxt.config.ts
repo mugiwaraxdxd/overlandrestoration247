@@ -27,7 +27,6 @@ const ANTIGUAS: Record<string, string> = {
   '/faqs': '/faq',
   '/contact-us': '/contact',
   '/areas-we-serve': '/areas',
-  '/gallery': '/',
   '/service-area/water-damage-and-mold-remediation-and-removal-services-fort-myers-fl': '/areas/fort-myers',
   '/service-area/water-damage-and-mold-remediation-and-removal-services-lehigh-acres-fl': '/areas/lehigh-acres',
   '/service-area/water-damage-and-mold-remediation-and-removal-service-north-fort-myers-fl': '/areas/north-fort-myers',

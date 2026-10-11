@@ -41,15 +41,16 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
           </div>
         </Transition>
       </div>
+      <NuxtLink to="/gallery" class="enlace">Our work</NuxtLink>
       <NuxtLink to="/areas" class="enlace">Areas</NuxtLink>
       <NuxtLink to="/reviews" class="enlace">Reviews</NuxtLink>
       <NuxtLink to="/faq" class="enlace">FAQ</NuxtLink>
       <NuxtLink to="/contact" class="enlace">Contact</NuxtLink>
     </nav>
 
-    <a class="llamar" :href="SITIO.telefonoEnlace">
+    <a class="llamar" :href="SITIO.telefonoEnlace" :aria-label="`Call 24/7 · ${SITIO.telefono}`">
       <span class="disponible" aria-hidden="true" />
-      Call 24/7 · {{ SITIO.telefono }}
+      Call 24/7<span class="numero"> · {{ SITIO.telefono }}</span>
     </a>
 
     <a class="boton-redondo llamar-movil" :href="SITIO.telefonoEnlace" aria-label="Call 24/7"><Icono nombre="telefono" /></a>
@@ -71,6 +72,7 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
         <NuxtLink v-for="x in s.catalogo" :key="x.ancla" :to="`/services/${s.slug}#${x.ancla}`" class="sub-movil">{{ x.titulo }}</NuxtLink>
       </details>
       <p class="grupo">More</p>
+      <NuxtLink to="/gallery" class="fila sencilla">Our work</NuxtLink>
       <NuxtLink to="/areas" class="fila sencilla">Areas we serve</NuxtLink>
       <NuxtLink to="/reviews" class="fila sencilla">Reviews</NuxtLink>
       <NuxtLink to="/faq" class="fila sencilla">FAQ</NuxtLink>
@@ -135,6 +137,7 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
   transition: background-color .2s var(--curva), color .2s var(--curva);
 }
 .enlace:hover, .enlace.router-link-active { background: var(--bruma); color: var(--tinta); }
+.enlace { white-space: nowrap; }
 
 .desplegable { position: relative; }
 /* El menú grande, centrado bajo la cabecera */
@@ -254,5 +257,12 @@ watch(abierto, (v) => { if (import.meta.client) document.documentElement.style.o
   .cabecera > .llamar { display: inline-flex; }
   .llamar-movil, .menu-movil { display: none; }
   .cortina { display: none !important; }
+}
+/* Pantallas medianas: el menú más prieto y el botón sin el número (el número, al tocarlo) */
+@media (min-width: 1000px) and (max-width: 1279px) {
+  .cabecera { gap: 16px; }
+  .enlaces { gap: 2px; }
+  .enlace { padding: 10px 11px; }
+  .cabecera > .llamar .numero { display: none; }
 }
 </style>
